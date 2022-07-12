@@ -7,7 +7,7 @@ from .auth import (
     CustomPasswordResetDoneView,
     CustomPasswordResetConfirmView,
     CustomPasswordResetCompleteView,
-    )
+)
 from . import auth
 
 from django.contrib.auth import views as auth_views
@@ -47,18 +47,18 @@ urlpatterns = [
     # !
 
 
-     path(
+    path(
         'Password_change/',
         auth_views.PasswordChangeView.as_view(
             template_name='auth/password_change_form.html',
-            success_url = reverse_lazy('password_change_done')
+            success_url=reverse_lazy('password_change_done')
         ),
         name='password_change'
     ),
 
 
-      path("password_change_done/", auth.change_done, name="password_change_done"),
+    path("password_change_done/", auth.change_done, name="password_change_done"),
 
-    
+
 
 ]

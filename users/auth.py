@@ -29,3 +29,7 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 
 def change_done(request):
     return render(request, 'auth/password_change_done.html')
+
+
+
+

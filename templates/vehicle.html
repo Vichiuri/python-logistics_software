@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row vh-100">
+    <div class="col-12 mt-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Vehicle</h6>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <form action="{{ request.path }}" method="post">
+                  {{ form.errors }}
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="id_name">Vehicle name</label>
+                    {% comment %} <input type="text" class="form-control rounded" name="vehicle_name" id="id_name"> {% endcomment %}
+                    {{form.vehicle_name}}
+                  </div>
+
+
+                        <div class="form-group">
+                    <label for="id_name">Vehicle Capacity</label>
+                    {% comment %} <input type="text" class="form-control rounded" name="capacity" id="id_name"> {% endcomment %}
+      {{form.capacity}}                  
+                </div>
+
+
+
+                      <div class="form-group">
+                    <label for="id_name">Vehicle Company</label>
+                    <input type="text" class="form-control rounded" name="company" id="id_name">
+                  </div>
+
+                  
+                  <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

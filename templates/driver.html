@@ -1,38 +1,38 @@
 {% extends 'base.html' %}
-
 {% block content %}
   <div class="row vh-100">
     <div class="col-12 mt-4">
       <div class="card">
         <div class="card-header">
-          <h6 class="card-title">Vehicle</h6>
+          <h6 class="card-title">Driver</h6>
         </div>
         <div class="card-content">
           <div class="card-body">
             <div class="row">
               <div class="col-12">
-                <form action="{{ request.path }}" method="post">
+                        <form action="{{ request.path }}" method="post">
                   {{ form.errors }}
                   {% csrf_token %}
                   <div class="form-group">
-                    <label for="id_name">Vehicle name</label>
+                    <label for="id_name">Driver  Name</label>
                     {% comment %} <input type="text" class="form-control rounded" name="vehicle_name" id="id_name"> {% endcomment %}
-                    {{form.vehicle_name}}
+                    {{form.name}}
                   </div>
 
 
                         <div class="form-group">
-                    <label for="id_name">Vehicle Capacity</label>
+                    <label for="id_name">National ID</label>
                     {% comment %} <input type="text" class="form-control rounded" name="capacity" id="id_name"> {% endcomment %}
-      {{form.capacity}}                  
+      {{form.national_id}}                  
                 </div>
 
 
 
                       <div class="form-group">
-                    <label for="id_name">Vehicle Company</label>
+                    <label for="id_name">Mobile Number</label>
                     {% comment %} <input type="text" class="form-control rounded" name="company" id="id_name"> {% endcomment %}
-                        {{form.company}} 
+   {{form.mobile_number}} 
+
                   </div>
 
                   

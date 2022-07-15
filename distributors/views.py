@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
@@ -9,11 +10,15 @@ from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.transaction import atomic
 from django.views import View
+
 from .models import Vehicle, Driver
-from django.contrib.auth import get_user_model
-from users.models import Profile
+
+from users.forms import User
+
 # Create your views here.
-User = get_user_model()
+
+
+UserManager = get_user_model()
 
 
 @login_required(login_url=settings.LOGIN_URL)
@@ -88,9 +93,9 @@ class CreateDriverView(LoginRequiredMixin, CreateView):
     @atomic
     def form_valid(self, form):
         driver = form.save(commit=False)
-        user = Profile()
+        user = User()
         user.is_driver = True
-        user.national_id = driver.national_id
+        user.email = driver.email
         user.save()
         driver.users = user
         driver.save()

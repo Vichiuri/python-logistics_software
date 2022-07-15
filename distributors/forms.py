@@ -18,7 +18,7 @@ class VehicleForm(forms.ModelForm):
 class DriverForm(forms.ModelForm):
     class Meta:
         model = Driver
-        fields = ['name', 'national_id', 'mobile_number']
+        fields = ['name', 'national_id', 'mobile_number', 'email']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,4 +26,6 @@ class DriverForm(forms.ModelForm):
         self.fields['national_id'].widget.attrs.update(
             {"class": "form-control"})
         self.fields['mobile_number'].widget.attrs.update(
+            {"class": "form-control"})
+        self.fields['email'].widget.attrs.update(
             {"class": "form-control"})

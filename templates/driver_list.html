@@ -24,6 +24,7 @@
                     <th>Name</th>
                     <th>National ID Number</th>
                     <th>Mobile Number</th>
+                      <th>Email</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -34,6 +35,7 @@
                       <td>{{ driver.name }}</td>
                       <td>{{ driver.national_id }}</td>
                       <td>{{ driver.mobile_number }}</td>
+                      <td>{{ driver.email }}</td>
                       <td>
                         <a href="{% url 'driver-detail' driver.pk %}" class="mr-3"><i
                           class="fa fa-edit text-success"></i></a>

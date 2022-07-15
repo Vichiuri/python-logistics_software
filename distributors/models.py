@@ -15,9 +15,12 @@ class Vehicle(models.Model):
 class Driver(models.Model):
     name = models.CharField(max_length=100)
     national_id = models.PositiveIntegerField('ID', unique=True)
-    users = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    users = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     mobile_number = models.PositiveIntegerField(
         'Mobile Number', unique=True, null=True, blank=True)
+    email = models.EmailField(verbose_name="Email",
+                              max_length=100, unique=True)
 
     def __str__(self):
         return self.name

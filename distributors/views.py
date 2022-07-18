@@ -4,12 +4,13 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
-from .forms import VehicleForm, DriverForm
+from .forms import VehicleForm, DriverForm,NewTownForm
 from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.transaction import atomic
 from django.views import View
+from .models import Town
 
 from .models import Vehicle, Driver
 
@@ -122,3 +123,53 @@ class DeleteDriverView(LoginRequiredMixin, View):
         driver = get_object_or_404(Driver, pk=pk)
         driver.delete()
         return redirect('driver_list')
+
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def town_list(request):
+    context = {}
+    context['towns'] = Town.objects.all()
+    return render(request, 'town-list.html', context)
+
+@login_required(login_url=settings.LOGIN_URL)
+def town(request):
+    context = {}
+    context['towns'] = Town.objects.all()
+
+    if request.method == 'POST':
+        form = NewTownForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('town-list')
+        else:
+            context['form'] = form
+            return render(request, 'town.html', context)
+
+    else:
+        form = NewTownForm()
+
+    context['form'] = form
+
+    return render(request, 'main/town.html', context)
+
+@login_required(login_url=settings.LOGIN_URL)
+def town_delete(request, pk):
+    town = get_object_or_404(Town, pk=pk)
+    town.delete()
+    return redirect('town-list')
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def town_edit(request, pk):
+    town = get_object_or_404(Town, pk=pk)
+    context = {}
+    context['town'] = town
+    form = NewTownForm()
+    if request.method == 'POST':
+        form = NewTownForm(request.POST, instance=town)
+        if form.is_valid():
+            form.save()
+            return redirect('town-list')
+    else:
+        context['form'] = form

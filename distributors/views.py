@@ -151,14 +151,13 @@ def town(request):
 
     context['form'] = form
 
-    return render(request, 'main/town.html', context)
+    return render(request, 'town.html', context)
 
 @login_required(login_url=settings.LOGIN_URL)
 def town_delete(request, pk):
     town = get_object_or_404(Town, pk=pk)
     town.delete()
     return redirect('town-list')
-
 
 @login_required(login_url=settings.LOGIN_URL)
 def town_edit(request, pk):
@@ -173,3 +172,4 @@ def town_edit(request, pk):
             return redirect('town-list')
     else:
         context['form'] = form
+        return render(request, 'town-edit.html', context)

@@ -3,7 +3,7 @@
   <div class="d-flex justify-content-end align-items-center mb-3">
 
     <div class="header-action">
-      <a href="{% url 'main:town' %}" class="btn btn-outline-primary"><i
+      <a href="{% url 'town' %}" class="btn btn-outline-primary"><i
         class="fa fa-plus mr-2"></i>New Town
       </a>
     </div>
@@ -33,9 +33,9 @@
                       <th>{{ forloop.counter }}</th>
                       <td>{{ town.name }}</td>
                       <td>
-                        <a href="{% url 'main:town-delete' town.pk %}" class="" title="delete"><i
+                        <a href="{% url 'town-delete' town.pk %}" class="" title="delete"><i
                           class="fa fa-trash text-danger"></i></a>
-                          <a href="{% url 'main:town-edit' town.pk %}" class="ml-2" title="delete"><i
+                          <a href="{% url 'town-edit' town.pk %}" class="ml-2" title="delete"><i
                             class="fa fa-edit text-primary"></i></a>
                       </td>
                     </tr>

@@ -24,3 +24,19 @@ class Driver(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Town(models.Model):
+    name = models.CharField(max_length=100)
+    created = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'town'
+        verbose_name = 'Town'
+        verbose_name_plural = 'Towns'
+
+
+        

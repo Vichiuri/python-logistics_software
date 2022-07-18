@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vehicle, Driver
+from .models import Vehicle, Driver,Town
 
 
 class VehicleForm(forms.ModelForm):
@@ -29,3 +29,8 @@ class DriverForm(forms.ModelForm):
             {"class": "form-control"})
         self.fields['email'].widget.attrs.update(
             {"class": "form-control"})
+
+class NewTownForm(forms.ModelForm):
+    class Meta:
+        model = Town
+        fields = '__all__'

@@ -13,7 +13,7 @@
                 <form action="{{ request.path }}" method="post">
                   {{ form.errors }}
                   {% csrf_token %}
-                  {% include 'tally/partials/form_fields.html' %}
+                  {% include 'form_fields.html' %}
                   <button type="submit" class="btn btn-primary">Save</button>
                 </form>
               </div>

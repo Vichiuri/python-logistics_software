@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vehicle, Driver,Town
+from .models import Vehicle, Driver,Town, Route
 
 
 class VehicleForm(forms.ModelForm):
@@ -34,3 +34,10 @@ class NewTownForm(forms.ModelForm):
     class Meta:
         model = Town
         fields = '__all__'
+        
+        
+
+class RouteForm(forms.ModelForm):
+    class Meta:
+        model = Route
+        fields = ['route_name', 'cities']

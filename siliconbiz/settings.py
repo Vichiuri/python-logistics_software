@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'distributors',
     'users',
     'widget_tweaks',
+    'mathfilters',
 
 ]
 

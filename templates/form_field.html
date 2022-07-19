@@ -1,0 +1,32 @@
+{% load widget_tweaks %}
+
+{% if field.is_hidden %}
+  {{ field }}
+{% else %}
+
+  <div class="form-group">
+  {% if not nolabel and field.widget_type != 'checkbox' %}
+    <label for="{{ field.auto_id }}" class="col-form-label{% if field.field.required %} required {% endif %} ">
+      {{ field.label|safe }}
+    </label>
+  {% endif %}
+  <div class="{% if field.widget_type == 'checkbox' %}form-check{% endif %}">
+    {% if field.widget_type == 'checkbox' %}
+      {% render_field field class+="form-check-input" %}
+      <label for="{{ field.auto_id }}" class="{% if field.field.required %} required {% endif %} ">
+        {{ field.label|safe }}
+      </label>
+    {% else %}
+      {% if field.errors %} 
+        {% render_field field class+="form-control is-invalid" %}
+      {% else %}
+        {% render_field field class+="form-control" %}
+      {% endif %}
+    {% endif %}
+    {% for error in field.errors %}
+      <div style="font-size: 10px" class="text-muted text-danger">{{ error }}</div>
+    {% endfor %}
+
+  </div>
+{% endif %}
+</div>

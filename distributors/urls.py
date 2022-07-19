@@ -16,6 +16,10 @@ urlpatterns = [
     path('town/edit/<int:pk>', views.town_edit, name='town-edit'),
     path('town/create/', views.town, name='town'),
     path('town/delete/<int:pk>', views.town_delete, name='town-delete'),
+    path('customers/', views.list_customers, name='customers'),
+    path('customers/create', views.create_customer, name='customer-create'),
+    path('customers/<int:pk>', views.update_customer, name='customer-update'),
+    path('customers/delete/<int:pk>', views.delete_customer, name='customer-delete')
 
 
 

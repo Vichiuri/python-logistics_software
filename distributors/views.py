@@ -186,11 +186,11 @@ def create_customer(request):
         form = CustomerRelationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('users:customers')
+            return redirect('customers')
     else:
         form = CustomerRelationForm()
     context = {"form": form}
-    return render(request, 'tally/users/create_customer.html', context)
+    return render(request, 'create_customer.html', context)
 
 
 def list_customers(request):
@@ -210,7 +210,7 @@ def list_customers(request):
         customers = paginator.page(paginator.num_pages)
 
     context = {"customers": customers}
-    return render(request, 'tally/users/customers_list.html', context)
+    return render(request, 'customers_list.html', context)
 
 
 def update_customer(request, pk):
@@ -219,14 +219,14 @@ def update_customer(request, pk):
         form = CustomerRelationForm(request.POST, instance=customer)
         if form.is_valid():
             form.save()
-            return redirect('users:customers')
+            return redirect('customers')
     else:
         form = CustomerRelationForm(instance=customer)
     context = {'form': form}
-    return render(request, 'tally/users/create_customer.html', context)
+    return render(request, 'create_customer.html', context)
 
 
 def delete_customer(request, pk):
     customer = get_object_or_404(CustomerRelation, pk=pk)
     customer.delete()
-    return redirect('users:customers')
+    return redirect('customers')

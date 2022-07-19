@@ -4,15 +4,16 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
-from .forms import VehicleForm, DriverForm,NewTownForm
+from .forms import VehicleForm, DriverForm,NewTownForm , CustomerRelationForm
 from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.transaction import atomic
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views import View
 from .models import Town
 
-from .models import Vehicle, Driver
+from .models import Vehicle, Driver,CustomerRelation
 
 from users.forms import User
 
@@ -173,3 +174,59 @@ def town_edit(request, pk):
     else:
         context['form'] = form
         return render(request, 'town-edit.html', context)
+    
+    
+    
+    
+
+
+
+def create_customer(request):
+    if request.method == 'POST':
+        form = CustomerRelationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('users:customers')
+    else:
+        form = CustomerRelationForm()
+    context = {"form": form}
+    return render(request, 'tally/users/create_customer.html', context)
+
+
+def list_customers(request):
+    customers = CustomerRelation.objects.all()
+
+    # Pagination
+    paginator = Paginator(customers, 20)
+    page = request.GET.get('page')
+
+    print('page: ', page)
+
+    try:
+        customers = paginator.page(page)
+    except PageNotAnInteger:
+        customers = paginator.page(1)
+    except EmptyPage:
+        customers = paginator.page(paginator.num_pages)
+
+    context = {"customers": customers}
+    return render(request, 'tally/users/customers_list.html', context)
+
+
+def update_customer(request, pk):
+    customer = get_object_or_404(CustomerRelation, pk=pk)
+    if request.method == 'POST':
+        form = CustomerRelationForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('users:customers')
+    else:
+        form = CustomerRelationForm(instance=customer)
+    context = {'form': form}
+    return render(request, 'tally/users/create_customer.html', context)
+
+
+def delete_customer(request, pk):
+    customer = get_object_or_404(CustomerRelation, pk=pk)
+    customer.delete()
+    return redirect('users:customers')

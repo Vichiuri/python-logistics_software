@@ -39,4 +39,10 @@ class Town(models.Model):
         verbose_name_plural = 'Towns'
 
 
-        
+class Route(models.Model):
+    route_name = models.CharField(max_length=100, null=True, blank=True)
+    cities = models.CharField(max_length=100, null=True, blank=True)
+    created = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.route_name       

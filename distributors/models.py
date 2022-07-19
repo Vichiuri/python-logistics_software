@@ -46,3 +46,16 @@ class Route(models.Model):
 
     def __str__(self):
         return self.route_name       
+
+class CustomerRelation(models.Model):
+    customer_name = models.CharField(max_length=100)
+    customer_address = models.TextField(null=True, blank=True)
+    town = models.ForeignKey('Town', on_delete=models.DO_NOTHING, null=True, blank=True)
+    Customer_pin = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    contact_person_number = models.PositiveIntegerField(null=True, blank=True)
+    contact_person_name = models.CharField(max_length=100, null=True, blank=True)
+    account = models.CharField(max_length=100, null=True, blank=True)
+    created = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.customer_name

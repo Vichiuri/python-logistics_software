@@ -25,6 +25,8 @@ urlpatterns = [
     path('routes/create', views.route, name='route'),
     path('routes/', views.route_list, name='route_list'),
     path('routes/<int:pk>', views.route_delete, name='route_delete'),
+    path('routes/delete/<int:pk>', views.update_route, name='route-detail'),
+
 
 
 

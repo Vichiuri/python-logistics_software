@@ -33,9 +33,18 @@
                             <td>{{ forloop.counter }}</td>
                             <td>{{route.route_name}}</td>
                             <td>{{route.cities}}</td>
-                            <td>
+                            {% comment %} <td>
+                             <a href="{% url 'route-detail' route.pk %}" class="mr-3"><i
+                          class="fa fa-edit text-success"></i></a>
                               <a href="{% url 'route_delete' route.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
+                            </td> {% endcomment %}
+
+                                    <td>
+                        <a href="{% url 'route-detail' route.pk %}" class="mr-3"><i
+                          class="fa fa-edit text-success"></i></a>
+                        <a href="{% url 'route_delete' route.pk %}" class=""><i
+                          class="fa fa-trash text-danger"></i></a>
+                      </td>
                         </tr>
                         {% endif %}
                         {% endfor %}

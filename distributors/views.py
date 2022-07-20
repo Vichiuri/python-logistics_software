@@ -249,6 +249,21 @@ def route_list(request):
 
 
 @login_required(login_url=settings.LOGIN_URL)
+def update_route(request, pk):
+
+    route = get_object_or_404(Route, pk=pk)
+    if request.method == 'POST':
+        form = RouteForm(request.POST, instance=route)
+        if form.is_valid():
+            form.save()
+            return redirect('route_list')
+    else:
+        form = RouteForm(instance=route)
+    context = {'form': form}
+    return render(request, 'route.html', context)
+
+
+@login_required(login_url=settings.LOGIN_URL)
 def route_delete(request, pk):
     route = get_object_or_404(Route, pk=pk)
     route.delete()

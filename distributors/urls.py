@@ -11,7 +11,8 @@ urlpatterns = [
     path('drivers/create', views.CreateDriverView.as_view(), name='driver'),
     path('drivers/', views.DriverListView.as_view(), name='driver_list'),
     path('drivers/<int:pk>', views.UpdateDriverView.as_view(), name='driver-detail'),
-    path('drivers/delete/<int:pk>',views.DeleteDriverView.as_view(), name='driver-delete'),
+    path('drivers/delete/<int:pk>',
+         views.DeleteDriverView.as_view(), name='driver-delete'),
     path('town/list/', views.town_list, name='town-list'),
     path('town/edit/<int:pk>', views.town_edit, name='town-edit'),
     path('town/create/', views.town, name='town'),
@@ -19,7 +20,19 @@ urlpatterns = [
     path('customers/', views.list_customers, name='customers'),
     path('customers/create', views.create_customer, name='customer-create'),
     path('customers/<int:pk>', views.update_customer, name='customer-update'),
-    path('customers/delete/<int:pk>', views.delete_customer, name='customer-delete')
+    path('customers/delete/<int:pk>',
+         views.delete_customer, name='customer-delete'),
+    path('routes/create', views.route, name='route'),
+    path('routes/', views.route_list, name='route_list'),
+    path('routes/<int:pk>', views.route_delete, name='route_delete'),
+
+
+
+
+
+
+
+
 
 
 

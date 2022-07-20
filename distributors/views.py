@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
-from .forms import VehicleForm, DriverForm,NewTownForm , CustomerRelationForm
+from .forms import VehicleForm, DriverForm, NewTownForm, CustomerRelationForm, RouteForm
 from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views import View
 from .models import Town
 
-from .models import Vehicle, Driver,CustomerRelation
+from .models import Vehicle, Driver, CustomerRelation, Route
 
 from users.forms import User
 
@@ -126,12 +126,12 @@ class DeleteDriverView(LoginRequiredMixin, View):
         return redirect('driver_list')
 
 
-
 @login_required(login_url=settings.LOGIN_URL)
 def town_list(request):
     context = {}
     context['towns'] = Town.objects.all()
     return render(request, 'town-list.html', context)
+
 
 @login_required(login_url=settings.LOGIN_URL)
 def town(request):
@@ -154,11 +154,13 @@ def town(request):
 
     return render(request, 'town.html', context)
 
+
 @login_required(login_url=settings.LOGIN_URL)
 def town_delete(request, pk):
     town = get_object_or_404(Town, pk=pk)
     town.delete()
     return redirect('town-list')
+
 
 @login_required(login_url=settings.LOGIN_URL)
 def town_edit(request, pk):
@@ -174,11 +176,6 @@ def town_edit(request, pk):
     else:
         context['form'] = form
         return render(request, 'town-edit.html', context)
-    
-    
-    
-    
-
 
 
 def create_customer(request):
@@ -230,3 +227,29 @@ def delete_customer(request, pk):
     customer = get_object_or_404(CustomerRelation, pk=pk)
     customer.delete()
     return redirect('customers')
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def route(request):
+    if request.method == 'POST':
+        form = RouteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('route_list')
+    else:
+        form = RouteForm()
+
+    return render(request, 'route.html', {'form': form})
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def route_list(request):
+    routes = Route.objects.all()
+    return render(request, 'route_list.html', {'routes': routes})
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def route_delete(request, pk):
+    route = get_object_or_404(Route, pk=pk)
+    route.delete()
+    return redirect('route_list')

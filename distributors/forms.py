@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vehicle, Driver, Town, Route, CustomerRelation
+from .models import Vehicle, Driver, Town, Route, CustomerRelation, Valuer
 
 
 class VehicleForm(forms.ModelForm):
@@ -49,4 +49,10 @@ class RouteForm(forms.ModelForm):
 class CustomerRelationForm(forms.ModelForm):
     class Meta:
         model = CustomerRelation
+        fields = '__all__'
+
+
+class ValuerForm(forms.ModelForm):
+    class Meta:
+        model = Valuer
         fields = '__all__'

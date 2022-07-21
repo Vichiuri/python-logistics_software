@@ -28,6 +28,14 @@ urlpatterns = [
     path('routes/delete/<int:pk>', views.update_route, name='route-detail'),
 
 
+    path('valuers/', views.list_valuers, name='valuers'),
+    path('valuers/create', views.create_valuer, name='valuer-create'),
+    path('valuers/<int:pk>', views.update_valuer, name='valuer-update'),
+    path('valuers/delete/<int:pk>', views.delete_valuer, name='valuer-delete'),
+    
+    
+
+
 
 
 

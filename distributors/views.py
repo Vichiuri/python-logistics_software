@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, ListView
-from .forms import VehicleForm, DriverForm, NewTownForm, CustomerRelationForm, RouteForm
+from .forms import VehicleForm, DriverForm, NewTownForm, CustomerRelationForm, RouteForm, ValuerForm
 from django.shortcuts import redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,7 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views import View
 from .models import Town
 
-from .models import Vehicle, Driver, CustomerRelation, Route
+from .models import Vehicle, Driver, CustomerRelation, Route, Valuer
 
 from users.forms import User
 
@@ -268,3 +268,54 @@ def route_delete(request, pk):
     route = get_object_or_404(Route, pk=pk)
     route.delete()
     return redirect('route_list')
+
+
+def create_valuer(request):
+    if request.method == 'POST':
+        form = ValuerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('valuers')
+    else:
+        form = ValuerForm()
+    context = {"form": form}
+    return render(request, 'create_valuer.html', context)
+
+
+def list_valuers(request):
+    valuers = Valuer.objects.all()
+
+    # Pagination
+    paginator = Paginator(valuers, 20)
+    page = request.GET.get('page')
+
+    print('page: ', page)
+
+    try:
+        valuers = paginator.page(page)
+    except PageNotAnInteger:
+        valuers = paginator.page(1)
+    except EmptyPage:
+        valuers = paginator.page(paginator.num_pages)
+
+    context = {"valuers": valuers}
+    return render(request, 'valuers_list.html', context)
+
+
+def update_valuer(request, pk):
+    valuer = get_object_or_404(Valuer, pk=pk)
+    if request.method == 'POST':
+        form = ValuerForm(request.POST, instance=valuer)
+        if form.is_valid():
+            form.save()
+            return redirect('valuers')
+    else:
+        form = ValuerForm(instance=valuer)
+    context = {'form': form}
+    return render(request, 'create_valuer.html', context)
+
+
+def delete_valuer(request, pk):
+    valuer = get_object_or_404(Valuer, pk=pk)
+    valuer.delete()
+    return redirect('valuers')

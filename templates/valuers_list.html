@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+{% block content %}
+  <div class="d-flex justify-content-end align-items-center mb-3">
+
+    <div class="header-action">
+      <a href="{% url 'valuer-create' %}" class="btn btn-outline-primary"><i
+        class="fa fa-plus mr-2"></i>New Valuer
+      </a>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="card-title">Valuers</h4>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Mobile Number</th>
+            <th scope="col">Address</th>
+            <th scope="col">Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for valuer in valuers %}
+            <tr>
+              <th>{{ valuer.pk }}</th>
+              <td>{{ valuer.valuer_name }}</td>
+              <td>{{ valuer.valuer_email }}</td>
+              <td>{{ valuer.valuer_number }}</td>
+              <td>{{ valuer.valuer_address }}</td>
+              <td>
+
+                <a href="{% url 'valuer-update' valuer.pk %}" class="mr-3"><i class="fa fa-edit text-success"></i></a>
+                <a href="{% url 'valuer-delete' valuer.pk %}" class=""><i class="fa fa-trash text-danger"></i></a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if valuers.has_other_pages %}
+        <div class="mt-4">
+          <ul class="pagination">
+            {% if valuers.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="{% url 'valuers' %}?page={{ valuers.previous_page_number }}">
+                  <i class="fa fa-angle-left"></i>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#">
+                  <i class="fa fa-angle-left"></i>
+                </a>
+              </li>
+            {% endif %}
+
+            {% if valuers.number|add:'-4' > 1 %}
+              <li class="page-item">
+                <a class="page-link" href="{% url 'valuers' %}?page={{ valuers.page|add:"-5" }}">
+                  &hellip;
+                </a>
+              </li>
+            {% endif %}
+
+            {% for page in valuers.paginator.page_range %}
+              {% if page == valuers.number %}
+                <li class="page-item active">
+                  <a class="page-link" href="{% url 'valuers' %}?page={{ page }}">{{ page }}</a>
+                </li>
+              {% elif page > valuers.number|add:'-5' and page < valuers.number|add:'5' %}
+                <li class="page-item">
+                  <a class="page-link" href="{% url 'valuers' %}?page={{ page }}">{{ page }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+            {% if valuers.paginator.num_pages > valuers.number|add:'4' %}
+                <li class="page-item"><a class="page-link" href="?page={{ valuers.number|add:'5' }}">&hellip;</a></li>
+            {% endif %}
+
+            {% if valuers.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="{% url 'valuers' %}?page={{ valuers.next_page_number }}">
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#">
+                  <i class="fa fa-angle-right"></i>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}

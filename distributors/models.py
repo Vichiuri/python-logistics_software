@@ -63,3 +63,13 @@ class CustomerRelation(models.Model):
 
     def __str__(self):
         return self.customer_name
+
+
+class Valuer(models.Model):
+    valuer_name = models.CharField(max_length=100)
+    valuer_email = models.EmailField(null=True, blank=True)
+    valuer_number = models.PositiveIntegerField(null=True, blank=True)
+    valuer_address = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.valuer_name

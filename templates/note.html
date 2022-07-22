@@ -1,0 +1,1229 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row mb-4">
+    <div class="col-12 mt-4">
+        <div id="error-place">
+
+        </div>
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Consignment Note</h6>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <div class="row" id="old">
+              <div class="col-12">
+                <div class="d-flex justify-content-between my-2">
+                    <p>Consignment Note No: {{reference_no}}</p>
+                    <p id="new_date" ></p>
+                </div>
+                <form action="{{ request.path }}" method="post">
+                  {{ form.errors }}
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="id_name">Sender Name</label>
+                    <div class="d-flex">
+                        <select class="form-control py-1" name="" id="id_sender_id">
+                            <option value="" selected>---Select sender -- </option>
+                        </select>
+                        <button type="button" class="btn btn-primary ml-1" title="New" id="id_sender_id_btn"><i class="fa fa-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_consigner_id">Consignee</label>
+                    <div class="d-flex">
+                        <select class="form-control" name="" id="id_consigner_id">
+                            <option value="" selected>---Select Consigneer -- </option>
+                        </select>
+                        <button type="button" class="btn btn-primary ml-1" title="New" id="id_consigner_id_btn"><i class="fa fa-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_route_id">Route</label>
+                    <div class="d-flex">
+                        <select class="form-control" name="" id="id_route_id">
+                            <option value="" selected>---Select Route -- </option>
+                        </select>
+                        <button type="button" class="btn btn-primary ml-1" title="New" id="id_route_id_btn"><i class="fa fa-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_town_id">Town</label>
+                    <div class="d-flex">
+                        <select class="form-control" name="" id="id_town_id">
+                            <option value="" selected>---Select Town -- </option>
+                        </select>
+                        <button type="button" class="btn btn-primary ml-1" title="New" id="id_town_id_btn"><i class="fa fa-plus"></i></button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_document_id">Type</label>
+                    <select class="form-control" name="" id="id_document_id">
+                        <option value="" selected>--- Select Document Type -- </option>
+                    </select>
+                  </div>
+                  <!-- <div class="header-action mt-4">
+                    <button type="button" id="new-btn" class="btn btn-outline-primary"><i
+                      class="fa fa-plus mr-2"></i> Input new
+                    </button>
+                  </div> -->
+                </form>
+              </div>
+            </div>
+            <!-- Input data manually -->
+            <!-- <div class="row" id="new">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between my-2">
+                      <p>Consignment Note No: {{reference_no}}</p>
+                      <p id="new_date_new" ></p>
+                  </div>
+                  <form action="{{ request.path }}" method="post">
+                    {{ form.errors }}
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_name">Sender Name</label>
+                      <input type="text" id="id_sender" placeholder="sender name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="id_national_id">Consignee</label>
+                      <input type="text" class="form-control" name="" id="id_consigner" placeholder="consigner name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_route_id">Route</label>
+                        <select class="form-control" name="" id="route_id">
+                            <option value="" selected>--- Select Route -- </option>
+                        </select>
+                      </div>
+                    <div class="form-group">
+                        <label for="id_town">Town</label>
+                        <input type="text" class="form-control" name="" id="id_town" placeholder="town" />
+                      </div>
+                    <div class="form-group">
+                      <label for="id_document_id">Type</label>
+                      <select class="form-control" name="" id="id_document">
+                          <option value="" selected>--- Select Document Type -- </option>
+                      </select>
+                    </div>
+                    <div class="header-action mt-4">
+                      <button type="button" id="old-back" class="btn btn-outline-primary"><i
+                        class="fa fa-arrow-left mr-2"></i> Back
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div> -->
+
+              <!-- enter customer data manually -->
+              <div class="row" id="sender_name_view">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between my-2">
+                      <p>Consignment Note No: {{reference_no}}</p>
+                      <p id="new_date_new" ></p>
+                  </div>
+                  <form action="{{ request.path }}" method="post">
+                    {{ form.errors }}
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_sender_customer_name">Sender Name <span class="text-red" style="color: red;">*</span></label>
+                      <input type="text" id="id_sender_customer_name" placeholder="sender name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="id_sender_customer_address">Customer Address</label>
+                      <input type="text" class="form-control" name="" id="id_sender_customer_address" placeholder="customer name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_sender_customer_pin">Customer Pin</label>
+                        <input type="text" class="form-control" name="" id="id_sender_customer_pin" placeholder="customer pin" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_sender_customer_account">Customer Account</label>
+                        <input type="text" class="form-control" name="" id="id_sender_customer_account" placeholder="customer account" />
+                    </div>
+                    <div class="header-action mt-4">
+                      <div class="row ml-2">
+                        <div>
+                            <button type="button" id="id_sender_save" class="btn btn-primary"> Save
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" id="id_sender_back" class=" ml-2 btn btn-outline-primary"> Back
+                            </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- end of customer data -->
+
+              <!-- enter route data manually -->
+              <div class="row" id="route_name_view">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between my-2">
+                      <p>Consignment Note No: {{reference_no}}</p>
+                      <p id="new_date_new" ></p>
+                  </div>
+                  <form action="{{ request.path }}" method="post">
+                    {{ form.errors }}
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_route_name">Route Name <span class="text-red" style="color: red;">*</span></label>
+                      <input type="text" id="id_route_name" placeholder="Route name" class="form-control"/>
+                    </div>
+                    <div class="form-group invisible">
+                      <label for="id_sender_customer_address">Customer Address</label>
+                      <input type="text" class="form-control" name="" id="id_sender_customer_address" placeholder="customer name" hidden />
+                    </div>
+                    <div class="form-group invisible">
+                        <label for="id_sender_customer_pin">Customer Pin</label>
+                        <input type="text" class="form-control" name="" id="id_sender_customer_pin" placeholder="customer pin" hidden/>
+                    </div>
+                    <div class="form-group invisible">
+                        <label for="id_sender_customer_account">Customer Account</label>
+                        <input type="text" class="form-control" name="" id="id_sender_customer_account" placeholder="customer account" hidden/>
+                    </div>
+                    <div class="header-action mt-4">
+                      <div class="row ml-2">
+                        <div>
+                            <button type="button" id="id_route_save" class="btn btn-primary"> Save
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" id="id_route_back" class=" ml-2 btn btn-outline-primary"> Back
+                            </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- end of route data -->
+
+
+              <!-- enter town data manually -->
+              <div class="row" id="town_name_view">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between my-2">
+                      <p>Consignment Note No: {{reference_no}}</p>
+                      <p id="new_date_new" ></p>
+                  </div>
+                  <form action="{{ request.path }}" method="post">
+                    {{ form.errors }}
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_town_name">Town Name <span class="text-red" style="color: red;">*</span></label>
+                      <input type="text" id="id_town_name" placeholder="Town name" class="form-control"/>
+                    </div>
+                    <div class="form-group invisible">
+                      <label for="id_sender_customer_address">Customer Address</label>
+                      <input type="text" class="form-control" name="" id="id_sender_customer_address" placeholder="customer name" hidden />
+                    </div>
+                    <div class="form-group invisible">
+                        <label for="id_sender_customer_pin">Customer Pin</label>
+                        <input type="text" class="form-control" name="" id="id_sender_customer_pin" placeholder="customer pin" hidden/>
+                    </div>
+                    <div class="form-group invisible">
+                        <label for="id_sender_customer_account">Customer Account</label>
+                        <input type="text" class="form-control" name="" id="id_sender_customer_account" placeholder="customer account" hidden/>
+                    </div>
+                    <div class="header-action mt-4">
+                      <div class="row ml-2">
+                        <div>
+                            <button type="button" id="id_town_save" class="btn btn-primary"> Save
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" id="id_town_back" class=" ml-2 btn btn-outline-primary"> Back
+                            </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- end of route data -->
+
+              <!-- enter consignee data manually -->
+              <div class="row" id="consignee_name_view">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between my-2">
+                      <p>Consignment Note No: {{reference_no}}</p>
+                      <p id="new_date_new" ></p>
+                  </div>
+                  <form action="{{ request.path }}" method="post">
+                    {{ form.errors }}
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_consignee_customer_name">Consigner Name <span class="text-red" style="color: red;">*</span></label>
+                      <input type="text" id="id_consignee_customer_name" placeholder="consigner name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="id_consignee_customer_address">Consigner Address</label>
+                      <input type="text" class="form-control" name="" id="id_consignee_customer_address" placeholder="consigner name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_consignee_customer_pin">Consigner Pin</label>
+                        <input type="text" class="form-control" name="" id="id_consignee_customer_pin" placeholder="consigner pin" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_consignee_customer_account">Consigner Account</label>
+                        <input type="text" class="form-control" name="" id="id_consignee_customer_account" placeholder="consigner account" />
+                    </div>
+                    <div class="header-action form-group mt-4">
+                      <div class="row ml-2">
+                        <div>
+                            <button type="button" id="id_consignee_save" class="btn btn-primary"> Save
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" id="id_consignee_back" class=" ml-2 btn btn-outline-primary"> Back
+                            </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <!-- end of consignee data -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="valuer-transportation" class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+    <strong>Invalid !</strong> Please add transportation.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div id="form-transport">
+    <div class="card mt-2">
+        <div class="card-body">
+            <p class="my-4">Tracking No: {{tracking_no}}</p>
+
+            <div class="row">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="id_description">Description</label>
+                    <input type="text" class="form-control" placeholder="Description" aria-label="description" name="description" id="id_description">
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="id_quantity">Quantity (kgs)</label>
+                    <input type="number" class="form-control" placeholder="Quantity" aria-label="quantity" id="id_quantity">
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="id_bunlde">Bundle</label>
+                    <input type="number" class="form-control" placeholder="Bundle" aria-label="bundle" name="bundle" id="id_bundle">
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="id_rate">Rate</label>
+                    <input type="text" class="form-control" placeholder="Rate" aria-label="rate" name="rate" id="id_rate">
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="id_per">Per</label>
+                    <select class="form-control" name="per" id="id_per">
+                        <option value="1">Kgs</option>
+                        <option value="2">Bundle</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="id_amount">Amount</label>
+                    <input type="text" class="form-control" placeholder="Amount" aria-label="amount" id="amount">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <label for="tax">VAT Tax</label>
+                    <select class="form-control" name="tax" id="id_tax">
+                        <option value="">-- Select Tax --</option>
+                        <option value="1">Inclusive</option>
+                        <option value="2">Exclusive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
+                    <button type="button" id="add" class="btn btn-primary"><i
+                        class="fa fa-plus mr-2"></i> Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- consignment list -->
+  <div class=" mt-4 vh-50">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">Consignment List</h6>
+      </div>
+      <div class="card-content">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+              <table class="table table-striped table-vcenter table-hover mb-0">
+                <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Name of Item</th>
+                  <th>Quantity</th>
+                  <th>Rate</th>
+                  <th>Per</th>
+                  <th>Amount</th>
+                </tr>
+                </thead>
+                <tbody id="consignment-list">
+                
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="valuer-error" class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+    <strong>Invalid !</strong> Please select naration.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div id="form-valuer" class="mb-4">
+    <div class="card mt-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-1">
+                    <label for="id_per">Valuer</label>
+                    <select class="form-control" name="id_valuer" id="id_valuer">
+                        <option value="">-- Select Valuer -- </option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-1">
+                    <select class="form-control" name="id_delivered" id="id_delivered" hidden>
+                        <option value="true">Yes</option>
+                        <option value="false" selected>No</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-lg-4 col-md-6 col-sm-12 mb-1">
+                    <button type="button" id="save_note" class="btn btn-primary"><i
+                        class="fa fa-plus mr-2"></i>Save Note</button>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-1" id="printer">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+{% block js %}
+<script>
+
+    var tax = 0
+    var inclusive = 0
+    var exclusive = 0
+
+    var protocol = window.location.protocol;
+    var host = window.location.host;
+    var url_print = protocol + "//" + host + "/note/print/";
+    var clicked_add = false
+
+
+    var formData = new FormData();
+    $('#id_consigner_id').prop('disabled', true);
+    $('#new_date').html(new Date().toLocaleDateString());
+    $('#new').hide()
+    $('#valuer-error').hide();
+    $('#valuer-transportation').hide()
+
+    var new_activated = false;
+
+    // hide sender view
+    $('#sender_name_view').hide()
+    $('#consignee_name_view').hide()
+    $('#route_name_view').hide()
+    $('#town_name_view').hide()
+    $('#save_note').prop('disabled', false);
+
+    $('#error-place').html(
+        `<div class="alert alert-danger" role="alert" id="alert">
+        </div>
+        <div class="alert alert-success role="alert" id="alert-success">
+        </div>`
+    );
+
+    $('#alert').hide()
+    $('#alert-success').hide()
+
+    $('#printer').html(
+        `<a type="button" id="print" class="btn btn-primary" target="_blank"><i
+        class="fa fa-print mr-2"></i> Print</a> <a type="button" id="new" class="btn btn-outline-primary"><i
+        class="fa fa-arrow-file mr-2"></i> New</a> <a type="button" id="print-back" class="btn btn-success"><i
+        class="fa fa-arrow-left mr-2"></i> Back</a>`
+    );
+
+    $('#print').hide()
+    $('#print-back').hide()
+    $('#new').hide()
+
+    // on button click show new sender view
+    $('#id_sender_id_btn').click(function(){
+        $('#sender_name_view').show()
+        $('#old').hide()
+    })
+
+    $('#id_sender_back').click(function() {
+        $('#sender_name_view').hide()
+        $('#old').show()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    });
+
+    $('#id_consigner_id_btn').click(function(){
+        $('#consignee_name_view').show()
+        $('#old').hide()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    })
+
+    $('#id_consignee_back').click(function() {
+        $('#consignee_name_view').hide()
+        $('#old').show()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    });
+
+    $('#id_route_id_btn').click(function(){
+        $('#route_name_view').show()
+        $('#old').hide()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    })
+
+    $('#id_route_back').click(function() {
+        $('#route_name_view').hide()
+        $('#old').show()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    });
+
+    $('#id_town_id_btn').click(function(){
+        $('#town_name_view').show()
+        $('#old').hide()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    })
+
+    $('#id_town_back').click(function() {
+        $('#town_name_view').hide()
+        $('#old').show()
+        $('#alert').hide()
+        $('#alert-success').hide()
+    });
+
+    // saving data to db
+    $('#id_sender_save').on('click', function(){
+        $('#alert').hide()
+
+        var sender_name = $('#id_sender_customer_name').val()
+        var sender_address = $('#id_sender_customer_address').val()
+        var sender_pin = $('#id_sender_customer_pin').val()
+        var sender_account = $('#id_sender_customer_account').val()
+
+        if(sender_name == ''){
+            $('#alert').html('<strong>Invalid !</strong> Please enter a sender name.')
+            $('#alert').show()
+            return false
+        }
+
+        var formData = new FormData()
+        formData.append('sender_name', sender_name)
+        formData.append('sender_address', sender_address)
+        formData.append('sender_pin', sender_pin)
+        formData.append('sender_account', sender_account)
+
+        jQuery.ajax({
+            url: '?action=save_sender',
+            type:'POST',
+            contentType: false,
+            processData: false,
+            data: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(data){
+                if (data.success) {
+                    $('#alert-success').html('<strong>Success !</strong> Sender saved successfully.')
+                    $('#alert-success').show()
+
+                    $('#id_sender_id').append($('<option>', {
+                        value: data.sender.id,
+                        text: data.sender.text
+                    }))
+                    $('#id_sender_id').val(data.sender.id).trigger('change')
+
+                    $('#sender_name_view').hide()
+                    $('#old').show()
+                } else {
+                    $('#alert').html('<strong>Error !</strong> Sender not saved.')
+                    $('#alert').show()
+                }
+            }
+        })
+    })
+
+    // saving consigner
+    // saving data to db
+    $('#id_consignee_save').on('click', function(){
+        $('#alert').hide()
+        var consignee_name = $('#id_consignee_customer_name').val()
+        var consignee_address = $('#id_consignee_customer_address').val()
+        var consignee_pin = $('#id_consignee_customer_pin').val()
+        var consignee_account = $('#id_consignee_customer_account').val()
+
+        if(consignee_name == ''){
+            $('#alert').html('<strong>Invalid !</strong> Please enter a consigner name.')
+            $('#alert').show()
+            return false
+        }
+
+        var formData = new FormData()
+        formData.append('consignee_name', consignee_name)
+        formData.append('consignee_address', consignee_address)
+        formData.append('consignee_pin', consignee_pin)
+        formData.append('consignee_account', consignee_account)
+
+        jQuery.ajax({
+            url: '?action=save_consignee',
+            type:'POST',
+            contentType: false,
+            processData: false,
+            data: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(data){
+                console.log("True: ", data)
+                if (data.success) {
+                    $('#alert-success').html('<strong>Success !</strong> Consigner saved successfully.')
+                    $('#alert-success').show()
+
+                    $('#id_consigner_id').append($('<option>', {
+                        value: data.consignee.id,
+                        text: data.consignee.text
+                    }))
+                    $('#id_consigner_id').val(data.consignee.id).trigger('change')
+
+                    $('#consignee_name_view').hide()
+                    $('#old').show()
+                } else {
+                    $('#alert').html('<strong>Error !</strong> Consigner not saved.')
+                    $('#alert').show()
+                }
+            }
+        })
+    })
+
+    // saving data to db
+    $('#id_route_save').on('click', function(){
+        $('#alert').hide()
+        var route_name = $('#id_route_name').val()
+
+        if(route_name == ''){
+            $('#alert').html('<strong>Invalid !</strong> Please enter a route name.')
+            $('#alert').show()
+            return false
+        }
+
+        var formdata = new FormData();
+        formdata.append('route_name', route_name)
+
+        jQuery.ajax({
+            url: '?action=save_routes',
+            type:'POST',
+            contentType: false,
+            processData: false,
+            data: formdata,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(data){
+                console.log("True: ", data)
+                if (data.success) {
+                    $('#alert-success').html('<strong>Success !</strong> Route saved successfully.')
+                    $('#alert-success').show()
+
+                    // add new route to id_route_id select2
+                    $('#id_route_id').append($('<option>', {
+                        value: data.route.id,
+                        text: data.route.text
+                    }))
+                    $('#id_route_id').val(data.route.id).trigger('change')
+
+                    $('#route_name_view').hide()
+                    $('#old').show()
+                } else {
+                    $('#alert').html('<strong>Error !</strong> Route not saved.')
+                    $('#alert').show()
+                }
+            }
+        })
+
+    })
+
+    // saving town
+    $('#id_town_save').on('click', function(){
+        $('#alert').hide()
+        var town = $('#id_town_name').val()
+
+        if(town == ''){
+            $('#alert').html('<strong>Invalid !</strong> Please enter a town name.')
+            $('#alert').show()
+            return false
+        }
+
+        var formdata = new FormData();
+        formdata.append('town_name', town)
+
+        jQuery.ajax({
+            url: '?action=save_towns',
+            type:'POST',
+            contentType: false,
+            processData: false,
+            data: formdata,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(data){
+                if (data.success) {
+                    $('#alert-success').html('<strong>Success !</strong> Town saved successfully.')
+                    $('#alert-success').show()
+
+                    // add new route to id_route_id select2
+                    $('#id_town_id').append($('<option>', {
+                        value: data.town.id,
+                        text: data.town.text
+                    }))
+                    $('#id_town_id').val(data.town.id).trigger('change')
+
+                    $('#town_name_view').hide()
+                    $('#old').show()
+                } else {
+                    $('#alert').html('<strong>Error !</strong> Town not saved.')
+                    $('#alert').show()
+                }
+            }
+        })
+
+    })
+
+    // saving data to db
+    $('#id_town_save').on('click', function(){
+        $('#alert').hide()
+        var town_name = $('#id_town_name').val()
+
+        if(town_name == ''){
+            $('#alert').html('<strong>Invalid !</strong> Please enter a town name.')
+            $('#alert').show()
+            return false
+        }
+    })
+
+
+    $('#new-btn').on('click', function(){
+        $('#new').show();
+        $('#old').hide();   
+        new_activated = true;
+        jQuery.ajax({
+            url: '?action=get_documents',
+            type:'GET',
+            dataType: 'json',
+            success: function(data){
+                let options = '';
+                if(data.documents.length > 0){
+                    $.each(data.documents, function(index, value){
+                        options += '<option value="'+value.id+'">'+value.name+'</option>';
+                    });
+                }
+                $('#id_document').html(options);
+            }
+        })
+        jQuery.ajax({
+        url: '?action=get_routes',
+            type:'GET',
+            dataType: 'json',
+            success: function(data){
+                let options = '';
+                if(data.routes.length > 0){
+                    $.each(data.routes, function(index, value){
+                        options += '<option value="'+value.id+'">'+value.text+'</option>';
+                    });
+                }
+                $('#route_id').html(options);
+            }
+        })
+    });
+
+    $('#old-back').on('click', function(){
+        $('#new').hide();
+        $('#old').show();   
+        new_activated = false;
+    });
+
+    jQuery.ajax({
+        url: '?action=get_documents',
+        type:'GET',
+        dataType: 'json',
+        success: function(data){
+            let options = '';
+            if(data.documents.length > 0){
+                $.each(data.documents, function(index, value){
+                    options += '<option value="'+value.id+'">'+value.name+'</option>';
+                });
+            }
+            $('#id_document_id').html(options);
+        }
+    })
+
+    jQuery.ajax({
+        url: '?action=get_valuers',
+        type:'GET',
+        dataType: 'json',
+        success: function(data){
+            let options = '';
+            options += '<option value="">-- Select Valuer -- </option>';
+            if(data.valuers.length > 0){
+                $.each(data.valuers, function(index, value){
+                    options += '<option value="'+value.id+'">'+value.name+'</option>';
+                });
+            }
+            $('#id_valuer').html(options);
+        }
+    })
+
+    $(document).ready(function() {
+          $('#id_sender_id').select2(
+            {
+              placeholder: 'Select or input sender name: ',
+              class: 'form-control',
+              minimumInputLength: 3,
+              width: '100%',
+              ajax: {
+                url: '?action=get_customers&sender_id=1',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                    page: params.page
+                  };
+                },
+                processResults: function (data, params) {
+                  params.page = params.page || 1;
+                  return {
+                    results: data.customers,
+                    pagination: {
+                      more: (params.page * 30) < data.total_count
+                    }
+                  };
+                },
+                cache: true
+              },
+            }
+          );
+      });
+
+      $('#id_sender_id').on('change', () => {
+        $('#id_consigner_id').prop('disabled', false);
+      });
+
+
+      $(document).ready(function() {
+          $('#id_consigner_id').select2(
+            {
+              placeholder: 'Select or input consigner: ',
+              class: 'form-control',
+              width: '100%',
+              minimumInputLength: 3,
+              ajax: {
+                url: '?action=get_customers&sender_id=0',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                    page: params.page,
+                    sender_id: $('#id_sender_id').val()
+                  };
+                },
+                processResults: function (data, params) {
+                  params.page = params.page || 1;
+                  return {
+                    results: data.customers,
+                    pagination: {
+                      more: (params.page * 30) < data.total_count
+                    }
+                  };
+                },
+                cache: true
+              },
+            }
+          );
+      });
+
+      $(document).ready(function() {
+          $('#id_town_id').select2(
+            {
+              placeholder: 'Select or input town name: ',
+              class: 'form-control',
+              minimumInputLength: 3,
+              width: '100%',
+              ajax: {
+                url: '?action=get_towns',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                    page: params.page
+                  };
+                },
+                processResults: function (data, params) {
+                  params.page = params.page || 1;
+                  return {
+                    results: data.towns,
+                    pagination: {
+                      more: (params.page * 30) < data.total_count
+                    }
+                  };
+                },
+                cache: true
+              },
+            }
+          );
+      });
+
+      $(document).ready(function() {
+          $('#id_route_id').select2(
+            {
+              placeholder: 'Select or input route name: ',
+              class: 'form-control',
+              minimumInputLength: 3,
+              width: '100%',
+              ajax: {
+                url: '?action=get_routes',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                    page: params.page
+                  };
+                },
+                processResults: function (data, params) {
+                  params.page = params.page || 1;
+                  return {
+                    results: data.routes,
+                    pagination: {
+                      more: (params.page * 30) < data.total_count
+                    }
+                  };
+                },
+                cache: true
+              },
+            }
+          );
+      });
+
+    $('#id_sender_id').on('change', function() {
+      console.log('sender_id changed: ', $(this).val());
+    })
+
+    // Button Input
+    $('#transportation').on('click', function(){
+        $('#form-transport').show();
+    })
+
+    $('#id_quantity').on('keyup', function(){
+        let quantity = $(this).val();
+        let rate = $('#id_rate').val();
+        let amount = quantity * rate;
+
+        // set bundle to quantity
+        $('#id_bundle').val(quantity);
+        $('#amount').val(amount);
+    })
+
+    $('#id_bundle').on('keyup', function(){
+        let bundle = $(this).val();
+        let rate = $('#id_rate').val();
+        let amount = bundle * rate;
+
+        if($('#id_per').val() == 2){
+            $('#amount').val(amount);
+        }else{
+            $('#amount').val($('#id_quantity').val() * rate);
+        }
+    })
+
+    $('#id_rate').on('keyup', function(){
+        let rate = $(this).val();
+        let quantity = $('#id_quantity').val();
+        let amount = quantity * rate;
+
+        if($('#id_per').val() == 1){
+            $('#amount').val(amount);
+        }else{
+            $('#amount').val(bundle * rate);
+        }
+    })
+
+    $('#id_per').on('change', function(){
+        let per = $(this).val();
+        let rate = $('#id_rate').val();
+        let quantity = $('#id_quantity').val();
+        let bundle = $('#id_bundle').val();
+
+        let tax = $('#id_tax').val();
+        if(tax == "" || tax == 2){
+          if(per == 1){
+              amount = quantity * rate;
+          }else{
+              amount = bundle * rate;
+          }
+        }else{
+          if(per == 1){
+              amount = quantity * rate;
+              amount = Math.round(amount * 1.16);
+          }else{
+              amount = bundle * rate;
+              amount = Math.round(amount * 1.16);
+          }
+
+        }
+        console.log('Per amount: ', amount);
+        $('#amount').val(amount);
+    })
+
+    $('#add').on('click', () => {
+        let name = $('#id_description').val();
+        let quantity = $('#id_quantity').val();
+        let rate = $('#id_rate').val();
+        let bundle = $('#id_bundle').val();
+        let per = $('#id_per').val();
+        let amount = $('#amount').val(); 
+        let inclusive = 0;
+        let exclusive = 0;
+        let tax_amount = 0;
+
+        let per_temp = $('#id_per').val()
+
+        console.log('Add : ' + amount)
+
+        if(name == '' || quantity == '' || rate == ''){
+            $('#error').html('<strong>Error!</strong> Please add description, quantity rate, and VAT.');
+            $('#error').show();
+            return false;
+        }
+
+        clicked_add = true;
+
+        let tax = $('#id_tax').val();
+
+        if(tax == "" ){
+          $('#alert').html('<strong>Error!</strong> Please selet Tax Type.');
+          $('#alert').show();
+          var scrollToTop = window.setInterval(function() {
+                var pos = window.pageYOffset;
+                if ( pos > 0 ) {
+                    window.scrollTo( 0, pos - 80 ); // how far to scroll on each step
+                } else {
+                    window.clearInterval( scrollToTop );
+                }
+            }, 30)
+          return false;
+        }
+
+        if(tax == 1){
+          let new_amount = (amount * 100) / 116;
+          exclusive = Math.round(new_amount)
+          inclusive = amount
+          tax_amount = inclusive - exclusive
+        }else{
+            exclusive = amount
+            inclusive = amount
+            tax_amount = 0
+        }
+
+        if(per == 1){
+          per_temp = 'Kgs'
+        }else{
+          per_temp = 'Bundle'
+        }
+
+        let html = '<tr>';
+        html += '<td>'+ '1' +'</td>';
+        html += '<td>'+$('#id_description').val()+'</td>';
+        html += '<td>'+$('#id_quantity').val()+'</td>';
+        html += '<td>'+$('#id_rate').val()+'</td>';
+        html += '<td>'+ per_temp +'</td>';
+        html += '<td>'+ amount +'</td>';
+        html += '</tr>';
+
+        formData.append('description', name);
+        formData.append('quantity', quantity);
+        formData.append('rate', rate);
+        formData.append('bundle', bundle);
+        formData.append('per', per);
+        formData.append('amount', amount);
+        formData.append('tax', tax_amount);
+        formData.append('inclusive', inclusive);
+        formData.append('exclusive', exclusive);
+
+        $('#consignment-list').append(html);
+        $('#id_description').val('');
+        $('#id_quantity').val('');
+        $('#id_rate').val('');
+        $('#id_per').val('');
+        $('#id_bundle').val('');
+        $('#amount').val('');
+        $('#add').prop('disabled', true);
+    })
+
+    $('#id_tax').on('change', function(){
+        let tax = $(this).val();
+        if(tax == 1){
+            $('#amount').val(Math.round($('#amount').val() * 1.16));
+        }else{
+            var amount;
+            if($('#id_per').val() == 1){
+                amount = $('#id_quantity').val() * $('#id_rate').val();
+                inclusive = amount
+            }else{
+                amount = $('#id_bundle').val() * $('#id_rate').val();
+                inclusive = amount
+            }
+            $('#amount').val(amount);
+        }
+    })
+
+    // get csrf token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    $('#save_note').on('click', function(){
+        
+
+        if(new_activated){
+            formData.append('sender_name', $('#id_sender').val());
+            formData.append('consignee', $('#id_consigner').val());
+            formData.append('route', $('#route_id').val());
+            formData.append('document', $('#id_document').val());
+            formData.append('id_delivered', $('#id_delivered').val());
+            formData.append('valuer', $('#id_valuer').val());
+            formData.append('town', $('#id_town').val());
+            formData.append('input', 0);
+
+        }else{
+            formData.append('sender_name', $('#id_sender_id').val());
+            formData.append('consignee', $('#id_consigner_id').val());
+            formData.append('route', $('#id_route_id').val());
+            formData.append('town', $('#id_town_id').val());
+            formData.append('document', $('#id_document_id').val());
+            formData.append('id_delivered', $('#id_delivered').val());
+            formData.append('valuer', $('#id_valuer').val());
+            formData.append('input', 1);
+
+            if($('#id_sender_id').val() == '' || $('#id_consigner_id').val() == '' || $('#id_route_id').val() == '' || $('#id_town_id').val() == ''){
+                $('#alert').html('<strong>Error!</strong> Please add all details.');
+                $('#alert').show();
+                
+                var scrollToTop = window.setInterval(function() {
+                  var pos = window.pageYOffset;
+                    if ( pos > 0 ) {
+                        window.scrollTo( 0, pos - 80 ); // how far to scroll on each step
+                    } else {
+                        window.clearInterval( scrollToTop );
+                    }
+                }, 30)
+
+                return false;
+
+            }
+        }
+
+        formData.append('tracking_no', "{{ tracking_no }}");
+        formData.append('reference_no', "{{ reference_no }}");
+
+        let name = $('#id_description').val();
+        let quantity = $('#id_quantity').val();
+        let rate = $('#id_rate').val();
+
+        if(clicked_add == false){
+            $('#alert').html('<strong>Error!</strong> Please add an item to consignment list.');
+            $('#alert').show();
+            var scrollToTop = window.setInterval(function() {
+                var pos = window.pageYOffset;
+                if ( pos > 0 ) {
+                    window.scrollTo( 0, pos - 80 ); // how far to scroll on each step
+                } else {
+                    window.clearInterval( scrollToTop );
+                }
+            }, 30)
+            return false;
+        }
+
+        clicked_add = false;
+
+        // check if naration is empty
+        if($('#id_valuer').val() == ''){
+            $('#alert').html('<strong>Error!</strong> Please add a valuer.');
+            $('#alert').show();
+            return false;
+        }
+
+        $('#alert').hide();
+
+        jQuery.ajax({
+            url: '?action=save_note',
+            type:'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(data){
+                if(data.status == 'success'){
+                    // window.location.href = "{% url 'main:note-list' %}";
+                    $('#alert-success').html('<strong>Success!</strong> Consignment Note saved.');
+                    $('#alert-success').show();
+                    
+                    url_print += data.id;
+                    $('#print').attr('href', url_print);
+                    $('#print-back').attr('href', "{% url 'main:note-list' %}");
+                    $('#print').show()
+                    $('#print-back').show()
+                    $('#new').attr('href', "{% url 'main:note' %}");
+                    $('#new').show()
+                    $('#save_note').prop('disabled', true);
+                }else{
+                    $('#alert').html('<strong>Error !</strong> Failed to save not saved.')
+                    $('#alert').show();
+                }
+            }
+        })
+    })
+
+</script>
+{% endblock js %}
+{% endblock %}

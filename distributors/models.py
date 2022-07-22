@@ -1,6 +1,9 @@
 from django.db import models
 from django.conf import settings
+from datetime import datetime
+from django.contrib.auth import get_user_model
 # Create your models here.
+User = get_user_model()
 
 
 class Vehicle(models.Model):
@@ -73,3 +76,43 @@ class Valuer(models.Model):
 
     def __str__(self):
         return self.valuer_name
+
+
+class ConsignmentNote(models.Model):
+    sender_name = models.ForeignKey(
+        'users.CustomerRelation', on_delete=models.DO_NOTHING, related_name='sender_name')
+    consignee = models.ForeignKey(
+        'users.CustomerRelation', on_delete=models.DO_NOTHING, related_name='consignee')
+    reference_no = models.CharField(max_length=100, null=True, blank=True)
+    route = models.ForeignKey(
+        'users.Route', on_delete=models.CASCADE, null=True, blank=True)
+    town = models.ForeignKey(
+        'main.Town', on_delete=models.DO_NOTHING, null=True, blank=True)
+    document = models.ForeignKey('main.Document', on_delete=models.DO_NOTHING)
+    description = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField()
+    bundle = models.PositiveIntegerField()
+    rate = models.PositiveIntegerField()
+    per = models.CharField(max_length=100)
+    amount = models.CharField(max_length=100)
+    tax = models.CharField(max_length=100, null=True, blank=True)
+    inclusive = models.CharField(max_length=100, null=True, blank=True)
+    tracking_no = models.PositiveIntegerField(default=0)
+    is_delivered = models.BooleanField(default=False)
+    valuer = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, null=True, blank=True)
+    date_created = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.pk}'
+
+    class Meta:
+        db_table = 'consignment_note'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # check if date_created is provided and if not, set it to today
+        if self.date_created:
+            self.date_created = self.date_created
+        else:
+            self.date_created = datetime.date.today()

@@ -88,7 +88,7 @@ class ConsignmentNote(models.Model):
         'users.Route', on_delete=models.CASCADE, null=True, blank=True)
     town = models.ForeignKey(
         'main.Town', on_delete=models.DO_NOTHING, null=True, blank=True)
-    document = models.ForeignKey('main.Document', on_delete=models.DO_NOTHING)
+    document = models.ForeignKey('Document', on_delete=models.DO_NOTHING)
     description = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
     bundle = models.PositiveIntegerField()

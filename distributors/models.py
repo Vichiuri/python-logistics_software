@@ -80,14 +80,14 @@ class Valuer(models.Model):
 
 class ConsignmentNote(models.Model):
     sender_name = models.ForeignKey(
-        'users.CustomerRelation', on_delete=models.DO_NOTHING, related_name='sender_name')
+        'CustomerRelation', on_delete=models.DO_NOTHING, related_name='sender_name')
     consignee = models.ForeignKey(
-        'users.CustomerRelation', on_delete=models.DO_NOTHING, related_name='consignee')
+        'CustomerRelation', on_delete=models.DO_NOTHING, related_name='consignee')
     reference_no = models.CharField(max_length=100, null=True, blank=True)
     route = models.ForeignKey(
-        'users.Route', on_delete=models.CASCADE, null=True, blank=True)
+        'Route', on_delete=models.CASCADE, null=True, blank=True)
     town = models.ForeignKey(
-        'main.Town', on_delete=models.DO_NOTHING, null=True, blank=True)
+        'Town', on_delete=models.DO_NOTHING, null=True, blank=True)
     document = models.ForeignKey('Document', on_delete=models.DO_NOTHING)
     description = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
@@ -100,7 +100,7 @@ class ConsignmentNote(models.Model):
     tracking_no = models.PositiveIntegerField(default=0)
     is_delivered = models.BooleanField(default=False)
     valuer = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, null=True, blank=True)
+        'Valuer',  on_delete=models.DO_NOTHING, null=True, blank=True)
     date_created = models.DateField(null=True, blank=True)
 
     def __str__(self):
@@ -116,3 +116,10 @@ class ConsignmentNote(models.Model):
             self.date_created = self.date_created
         else:
             self.date_created = datetime.date.today()
+
+
+class Document(models.Model):
+    doc_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.doc_name

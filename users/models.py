@@ -6,6 +6,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.db import models
+from distributors.models import Document
 
 
 class UserManager(BaseUserManager):
@@ -40,6 +41,23 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self._create_user(email, password, **extra_fields)
+
+    def _create_documents(self):
+        Document.objects.create(
+            doc_name='Invoice',
+        ).save()
+
+        Document.objects.create(
+            doc_name='COD',
+        ).save()
+
+        Document.objects.create(
+            doc_name='Cash Sales',
+        ).save()
+
+        Document.objects.create(
+            doc_name='Supplementary',
+        ).save()
 
 
 class User(AbstractBaseUser, PermissionsMixin):

@@ -1,0 +1,647 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="d-flex justify-content-end align-items-center mb-3">
+
+    <div class="header-action">
+      <a href="{% url 'note' %}" class="btn btn-outline-primary"><i
+        class="fa fa-plus mr-2"></i>Add Consignment
+      </a>
+    </div>
+  </div>
+  <div class="row vh-100">
+    <div class="col-12 mt-4">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Consignment list</h6>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <p id="date" class="mr-2 d-flex justify-content-end" ></p>
+            <div class="row g-3 mb-4 d-flex">
+              <div class="col-lg-4 col-sm-12 col-md-4">
+                <p>Filter</p>
+                <input type="text" class="form-control" id="datepicker" name="datepicker" placeholder="Select Date">
+              </div>
+              <div class="col-lg-4 col-sm-12 col-md-4">
+                <p>Route</p>
+                <select type="text" class="form-control" id="filter_route" name="filter_route" placeholder="Select Route" multiple></select>
+              </div>
+              <div class="col-lg-4 col-sm-12 col-md-4">
+                <p>Document</p>
+                <select type="text" class="form-control" id="filter_document" name="filter_document" placeholder="Select Document" multiple></select>
+              </div>
+            </div>
+            <div class="row mb-4 d-flex">
+              <div class="col-lg-4 col-sm-12 col-md-4">
+                <p>Sender or Consigner</p>
+                <select type="text" class="form-control" id="filter_consigner" name="filter_consigner" placeholder="Search by consigner/sender" multiple></select>
+              </div>
+              <div class="col-lg-4 col-sm-12 col-md-4">
+                <p>Consignement Reference No</p>
+                <select type="text" class="form-control" id="filter_consigner_no" name="filter_consigner_no" multiple></select>
+              </div>
+            </div>
+            <div class="row" id="paginator">
+              <div class="col-12 table-responsive" style="min-height: 40vh;">
+                <table class="table table-striped table-vcenter table-hover mb-0">
+                  <thead class="thead-dark">
+                  <tr>
+                    <th>Date</th>
+                    <th>Tracking No</th>
+                    <th>Sender</th>
+                    <th>Consignee</th>
+                    <th>Route</th>
+                    <th>Type</th>
+                    <th>Bundle</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% block js %}
+  <script>
+
+    // set daterangepicker
+    $('#datepicker').daterangepicker({
+      autoUpdateInput: true,
+      locale: {
+        format: 'YYYY-MM-DD'
+      },
+      // set start date to today
+      startDate: moment().startOf('day')
+    });
+
+    // $('#datepicker').on('change', function() {
+    //   var date = $(this).val();
+    //   console.log('Date: ', date);
+    // });
+
+    // set date to today
+    // var today = new Date().toLocaleDateString();
+    // // set date to today yyyy-mm-dd
+    // var today = new Date().toISOString().substring(0, 10);
+    // $('#datepicker').val(today);
+    // document.getElementById("date").innerHTML = today;
+
+    // delivery url
+    var protocol = window.location.protocol;
+    var host = window.location.host;
+    var url = protocol + "//" + host + "/note/view/";
+    var url_download = protocol + "//" + host + "/note/download/";
+    var url_print = protocol + "//" + host + "/note/print/";
+    var url_edit = protocol + "//" + host + "/note/edit/";
+
+    $(document).ready(function() {
+      $('#filter_route').select2({
+        placeholder: 'Select route',
+        width: '100%',
+        minimumInputLength: 2,
+        ajax: {
+          url: '?action=get_routes',
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+              results: data.routes,
+              pagination: {
+                more: (params.page * 30) < data.total_count
+              }
+            };
+          },
+          cache: true
+        },
+      })
+    });
+
+    $(document).ready(function() {
+      $('#filter_document').select2({
+        placeholder: 'Select document',
+        minimumInputLength: 1,
+        width: '100%',
+        ajax: {
+          url: '?action=get_documents',
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+              results: data.documents,
+              pagination: {
+                more: (params.page * 30) < data.total_count
+              }
+            };
+          },
+          cache: true
+        },
+      })
+    });
+
+    $(document).ready(function() {
+      $('#filter_consigner').select2({
+        placeholder: 'Search by sender or consigner',
+        minimumInputLength: 1,
+        width: '100%',
+        ajax: {
+          url: '?action=get_customers',
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page,
+              date: $('#datepicker').val()
+            };
+          },
+          processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+              results: data.customers,
+              pagination: {
+                more: (params.page * 30) < data.total_count
+              }
+            };
+          },
+          cache: true
+        },
+      })
+    });
+
+    $('#filter_consigner_no').on('change', function(){
+      var date = $('#datepicker').val();
+      var category = $('#category').val();
+      var route = $('#filter_route').val();
+      var document = $('#filter_document').val();
+      var consignee = $(this).val();
+
+      $.ajax({
+        url: '?action=filter&date='+date +'&page=1&route='+route + '&document='+document + '&consigner='+consignee + '&category='+category,
+        type: 'GET',
+        data: {
+          date: date,
+          route: route,
+        },
+        success: function(data){
+            let options = ''
+            if(data.notes.length > 0 ){
+              data.notes.forEach(function(loader){
+                options += generate_table(loader, total_value=data.total_value);
+              });
+              options += '<tr>';
+              options += '<td>Total</td>';
+              options += '<td colspan="11">' + data.total_value;
+              options += '</td>';
+              options += '</tr>';
+            }else{
+              options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+            }
+            $('tbody').html(options);
+
+            let element = generate_paginator(data.pagination);
+
+            // remove previous paginator html#
+            $('#remove').remove();
+            $('#paginator').append(element);
+          }
+        });
+    })
+
+
+    $(document).ready(function() {
+      $('#filter_consigner_no').select2({
+        placeholder: 'Search by consignment no',
+        minimumInputLength: 1,
+        width: '100%',
+        ajax: {
+          url: '?action=get_notes',
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page,
+              date: $('#datepicker').val()
+            };
+          },
+          processResults: function (data, params) {
+            params.page = params.page || 1;
+            return {
+              results: data.notes,
+              pagination: {
+                more: (params.page * 30) < data.total_count
+              }
+            };
+          },
+          cache: true
+        },
+      })
+    });
+
+    $('#filter_consigner').on('change', function(){
+      var date = $('#datepicker').val();
+      var category = $('#category').val();
+      var route = $('#filter_route').val();
+      var document = $('#filter_document').val();
+      var consignee = $(this).val();
+
+      $.ajax({
+        url: '?action=filter&date='+date +'&page=1&route='+route + '&document='+document + '&consigner='+consignee ,
+        type: 'GET',
+        data: {
+          date: date,
+          route: route,
+        },
+        success: function(data){
+            let options = ''
+            if(data.notes.length > 0 ){
+              data.notes.forEach(function(loader){
+                options += generate_table(loader, total_value=data.total_value);
+              });
+              options += '<tr>';
+              options += '<td>Total</td>';
+              options += '<td colspan="11">' + data.total_value;
+              options += '</td>';
+              options += '</tr>';
+            }else{
+              options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+            }
+            $('tbody').html(options);
+
+            let element = generate_paginator(data.pagination);
+
+            // remove previous paginator html#
+            $('#remove').remove();
+            $('#paginator').append(element);
+          }
+        });
+    })
+
+    $('#filter_consigner_no').on('change', function(){
+      var date = $('#datepicker').val();
+      var category = $('#category').val();
+      var route = $('#filter_route').val();
+      var document = $('#filter_document').val();
+      var consignee = $(this).val();
+
+      $.ajax({
+        url: '?action=filter&date='+date +'&page=1&route='+route + '&document='+document + '&consignee='+consignee ,
+        type: 'GET',
+        data: {
+          date: date,
+          route: route,
+        },
+        success: function(data){
+            let options = ''
+            if(data.notes.length > 0 ){
+              data.notes.forEach(function(loader){
+                options += generate_table(loader, total_value=data.total_value);
+              });
+              options += '<tr>';
+              options += '<td>Total</td>';
+              options += '<td colspan="11">' + data.total_value;
+              options += '</td>';
+              options += '</tr>';
+            }else{
+              options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+            }
+            $('tbody').html(options);
+
+            let element = generate_paginator(data.pagination);
+
+            // remove previous paginator html#
+            $('#remove').remove();
+            $('#paginator').append(element);
+          }
+        });
+    })
+
+
+    $('#filter_route').on('change', function(){
+      var date = $('#datepicker').val();
+      var category = $('#category').val();
+      var route = $('#filter_route').val();
+      var document = $('#filter_document').val();
+
+      $.ajax({
+        url: '?action=filter&date='+date +'&page=1&route='+route + '&document='+document,
+        type: 'GET',
+        data: {
+          date: date,
+          route: route
+        },
+        success: function(data){
+            let options = ''
+            if(data.notes.length > 0 ){
+              data.notes.forEach(function(loader){
+                options += generate_table(loader, total_value=data.total_value);
+              });
+              options += '<tr>';
+              options += '<td>Total</td>';
+              options += '<td colspan="11">' + data.total_value;
+              options += '</td>';
+              options += '</tr>';
+            }else{
+              options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+            }
+            $('tbody').html(options);
+
+            let element = generate_paginator(data.pagination);
+
+            // remove previous paginator html#
+            $('#remove').remove();
+            $('#paginator').append(element);
+          }
+        });
+    })
+
+    $('#filter_document').on('change', function(){
+      var date = $('#datepicker').val();
+      var category = $('#category').val();
+      var route = $('#filter_route').val();
+      var document = $('#filter_document').val();
+
+      $.ajax({
+        url: '?action=filter&date='+date +'&page=1&route='+route + '&document='+document,
+        type: 'GET',
+        data: {
+          date: date,
+          route: route
+        },
+        success: function(data){
+            let options = ''
+            if(data.notes.length > 0 ){
+              data.notes.forEach(function(loader){
+                options += generate_table(loader, total_value=data.total_value);
+              });
+              options += '<tr>';
+              options += '<td>Total</td>';
+              options += '<td colspan="11">' + data.total_value;
+              options += '</td>';
+              options += '</tr>';
+            }else{
+              options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+            }
+            $('tbody').html(options);
+
+            let element = generate_paginator(data.pagination);
+
+            // remove previous paginator html#
+            $('#remove').remove();
+            $('#paginator').append(element);
+          }
+        });
+    })
+  
+    var date = $('#datepicker').val();
+    $.ajax({
+        url: '?action=filter&date='+date+'&page=1&route='+$('#filter_route').val() + '&document='+$('#filter_document').val(),
+        type: 'GET',
+        data: {
+          date: date
+        },
+        success: function(data){
+          let options = ''
+          if(data.notes.length > 0 ){
+            data.notes.forEach(function(loader){
+              options += generate_table(loader, total_value=data.total_value);
+            });
+            options += '<tr>';
+            options += '<td>Total</td>';
+            options += '<td colspan="11">' + data.total_value;
+            options += '</td>';
+            options += '</tr>';
+          }else{
+            options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+          }
+          $('tbody').html(options);
+
+          let element = generate_paginator(data.pagination);
+
+          $('#remove').remove();
+          $('#paginator').append(element);
+        }
+      });
+  
+    $('#datepicker').change(function(){
+      var date = $('#datepicker').val();
+      $.ajax({
+        url: '?action=filter&date='+date + '&page=' + 1 + '&route='+$('#filter_route').val() + '&document='+$('#filter_document').val(),
+        type: 'GET',
+        data: {
+          date: date
+        },
+        success: function(data){
+          console.log(data);
+          let options = ''
+          if(data.notes.length > 0 ){
+            data.notes.forEach(function(loader){
+              options += generate_table(loader, total_value=data.total_value);
+            });
+            options += '<tr>';
+            options += '<td>Total</td>';
+            options += '<td colspan="11">' + data.total_value;
+            options += '</td>';
+            options += '</tr>';
+          }else{
+            options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+          }
+          $('tbody').html(options);
+          $('#date').html(date);
+          let element = generate_paginator(data.pagination);
+          $('#remove').remove();
+          $('#paginator').append(element);
+        }
+      });
+    });
+
+    function messaging(is_delivered){
+      if(is_delivered === true){
+        return '<span class="badge badge-success">Delivered</span>';
+      }else{
+        return '<span class="badge badge-danger">Pending</span>';
+      }
+    }
+
+
+    // next page function working
+    function nextPage(n_page){
+      var date = $('#datepicker').val();
+      $.ajax({
+          url: '?action=filter&date='+date+'&page=' + n_page + '&route=' + $('#filter_route').val() + '&document=' + $('#filter_document').val(),
+          type: 'GET',
+          data: {
+            date: date
+          },
+          success: function(data){
+            let options = ''
+            if(data.notes.length > 0 ){
+              data.notes.forEach(function(loader){
+                options += generate_table(loader, total_value=data.total_value);
+              });
+            }else{
+              options += '<tr><td colspan="11">No Consignment notes Found</td></tr>'
+            }
+            $('tbody').html(options);
+
+            let element = generate_paginator(data.pagination);
+
+            // remove previous paginator html#
+            $('#remove').remove();
+            $('#paginator').append(element);
+          }
+        });
+    }
+
+    function generate_table(loader, total_value){
+      let options = '';
+      options += '<tr>';
+      options += '<td>' +loader.date + '</td>';
+      options += '<th>' +loader.tracking_no + '</th>';
+      options += '<td>' +loader.sender_name + '</td>';
+      options += '<td>' +loader.consigner + '</td>';
+      options += '<td>' +loader.route + '</td>';
+      options += '<td>' +loader.document + '</td>';
+      options += '<td>' +loader.bundle + '</td>';
+      options += '<td>' +loader.quantity + '</td>';
+      options += '<td>' +loader.inclusive + '</td>';
+      options += '<td>' + select_box(loader.is_delivered, loader.pk)  + '</td>';
+      options += '<td>';
+      options += '<div class="btn-group">';
+      options += '<i type="button" class="h5 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">                                      ';
+      options += '</i>';
+      options += '<div class="dropdown-menu dropdown-menu-right">';
+      options += '<a href="' + url + loader.pk + '" class="dropdown-item" title="view"><i class="fa fa-eye" aria-hidden="true"></i> View</a>';
+      options += '<a href="' + url_print + loader.pk + '" class="dropdown-item" title="print" target="_blank"><i class="fa fa-print" aria-hidden="true"></i> Print</a>';
+      options += '<a href="' + url_download + loader.pk + '" class="dropdown-item" title="print" target="_blank"><i class="fa fa-file" aria-hidden="true"></i> Download</a>';
+      options += '<a href="' + url_edit + loader.pk + '" class="dropdown-item" title="edit"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a>';
+      options += '<a href="" class="dropdown-item" title="delete"> <i class="fa fa-trash" aria-hidden="true"></i> Delete</a>';
+      options += '</div>';
+      options += '</div>';
+      options += '</td>';
+      options += '</tr>';
+      return options;
+    }
+
+    function generate_paginator(pagination){
+      let element = '';
+      element += '<ul class="pagination mx-2 mt-3" id="remove">';
+      if(pagination.has_previous){
+        element += '<li class="page-item"><a class="page-link" onclick="previousPage(' + pagination.previous_page +  ')"  type="button">&laquo;</a></li>';
+      }else{
+        element += '<li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>';
+      }
+
+      if(pagination.page - 4 > 1){
+        element += '<li class="page-item"><a class="page-link" onclick="nextPage(' + (pagination.page - 5)  + ')"   type="button">&hellip;</a></li>';
+      }
+
+      for(let i = 1; i <= pagination.total_pages; i++){
+        if(i == pagination.page){
+          element += '<li class="page-item active"><a class="page-link" href="?action=get_deliveries&page='+i+'">'+i+'</a></li>';
+        }else if (i > pagination.page - 5 && i < pagination.page + 5){
+          element += '<li class="page-item"><a class="page-link" onclick="nextPage(' + i +  ')" type="button">'+i+'</a></li>';
+        }
+      }
+
+      if(pagination.total_pages > (pagination.page + 4)){
+        element += '<li class="page-item"><a class="page-link" onclick="nextPage(' + pagination.page + 5  + ')"  type="button">&hellip;</a></li>';
+      }
+
+      if(pagination.has_next){
+        element += '<li class="page-item"><a class="page-link" onclick="nextPage()" type="button"  >&raquo;</a></li>';
+      }else{
+        element += '<li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>';
+      }
+
+      element += '</ul>';
+      return element;
+    }
+
+    function select_box(is_delivered, pk){
+      let options = '';
+      options += '<select class="form-control" id="' + pk +  '" onclick="selectDelivered()">';
+      if(is_delivered === true){
+        options += '<option value="true" selected>Delivered</option>';
+        options += '<option value="false">Pending</option>';
+      }else{
+        options += '<option value="false" selected>Pending</option>';
+        options += '<option value="true">Delivered</option>';
+      }
+      options += '</select>';
+      return options;
+    }
+
+    
+    function selectDelivered() {
+      // get id value
+      let id = event.target.id;
+
+      // get value
+      let value = event.target.value;
+
+      // disable select box
+      $('#' + id).prop('disabled', true);
+      $('#' + id).append('<option value="3" selected>Please wait ...</option>');
+
+      // send ajax request
+      jQuery.ajax({
+        url: '?action=update_status&id=' + id + '&value=' + value,
+        type: 'GET',
+        data: {
+          id: id,
+          value: value
+        },
+        success: function(data){
+          $('#' + id).prop('disabled', false);
+          $('#' + id).empty();
+
+          if(data.status === true){
+            if(data.is_delivered == true){
+              $('#' + id).html('<option value="true" selected>Delivered</option>');
+              $('#' + id).append('<option value="false">Pending</option>');
+            }else{
+              $('#' + id).html('<option value="false" selected>Pending</option>');
+              $('#' + id).append('<option value="true">Delivered</option>');
+            }
+          }else{
+            $('#' + id).prop('disabled', false);
+            $('#' + id).empty();
+            // return to original value
+            if(value === 'true'){
+              $('#' + id).html('<option value="true" selected>Delivered</option>');
+              $('#' + id).append('<option value="false">Pending</option>');
+            }else{
+              $('#' + id).html('<option value="false" selected>Pending</option>');
+              $('#' + id).append('<option value="true">Delivered</option>');
+            }
+          }
+        }
+      });
+    }
+
+  </script>
+  {% endblock js %}
+{% endblock %}

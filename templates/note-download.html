@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consignment Note</title>
+    <style>
+        .title{
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        p{
+            font-size: 8px;
+        }
+        h6{
+            font-size: 8px;
+        }
+
+        th, td{
+            font-size: 8px;
+        }
+        .sub-title{
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="row min-vh-75">
+        <div class="card w-100 mx-4 p-4 ">
+            <div class="card-title">
+                <h4 class="title">Consignment Note</h4>
+                <br/>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p class="sub-title">KAMONGO WASTE PAPER (KENYA) LTD</p>
+                        <p>P.O. BOX 673313-00200, NAIROBI, KENYA</p>
+                        <p>Tel: 020 2620498 / 8045369</p>
+                        <p>Cel: 0720 555240 / 0733 555559</p>
+                        <p>Email: info@kamongo.co.ke</p>
+                    </div>
+                    <div>
+                        <p>PIN NO: P051677579F</p>
+                    </div>
+                    <!-- <p>Consignment Note No: {{notes.pk}}</p>
+                    <p>{{notes.date_created}}</p> -->
+                </div>
+                <br/>
+                <div class="">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column" style="flex-grow: 4;">
+                            <div> 
+                                <p>Sender Name</p>
+                                <p>Address</p>
+                            </div>
+                            <div class="ml-4">
+                                <p>{{notes.sender_name}}</p>
+                                <p>{{notes.sender_name.customer_address}}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column justify-content-right" style="flex-grow: 2;">
+                            <div>
+                                <p>Date</p>
+                                <p>Consignee</p>
+                                <p>Address</p>
+                            </div>
+                            <div class="ml-4">
+                                <p>{{notes.date_created}}</p>
+                                <p>{{notes.consignee}}</p>
+                                <p>{{notes.consignee.customer_address}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <div class="table-responsive">
+                    <table
+                    class="table table-hover border table-stripped table-vcenter table-striped"
+                    cellspacing="0"
+                    >
+                        <thead class="table bg-primary text-white">
+                            <tr>
+                                <td>Weight</td>
+                                <td>Quantity</td>
+                                <td>@</td>
+                                <td>Ksh</td>
+                                <!-- <td>Exclusive</td>
+                                <td>Tax</td>
+                                <td>Inclusive</td> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="d-flex flex-column">
+                                        <p>{% if notes.per == 1 %} Bundle {% else %} Kgs {% endif %}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <p>{{notes.quantity}}</p>
+                                    </div>
+                                </td>
+                                <td><div class="d-flex flex-column"><p>{{notes.rate}}</p></div></td>
+                                <td><p>{{notes.inclusive}} </p></td>
+                                <!-- <td><p>{{notes.tax}} </p></td>
+                                <td><p>{{notes.inclusive}} </p></td> -->
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                    </div>
+                                </td>
+                                <td  colspan="2">
+                                    <div class="d-flex flex-column">
+                                        <p>Total</p>
+                                    </div>
+                                </td>
+                                <td>{{notes.inclusive}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> 
+                <div class="d-flex flex-row">
+                    <div>
+                        <h4><p>IMPORTANT</p></h4><p>All gooods stored and carried at owners's risk and the company will not be liable in any way whatsoever for negligence of the company or its agents. Without prejudice to the generality of the foregoing the company will not be responsible for any loss, damage, delay, or detention of any goods due to any collision, overturning, robbery, theft civil commotion riot or disturbances, war or inherent vice or defict in goods carried, defective packaging of faulty, wrong or insufficient address of the consignee. The company shall have a general as well as particular lien on all goods for unpaid accounts</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <h6 style="width: 60%;">FRAGILE GOODS RECEIVED CONTENTS NOT CHECKED COMPANY NOT LIABLE FOR BREAKAGE / DAMAGE ON TRANSIT</h6>
+                    <h6 style="flex-grow: 4;" class="d-flex justify-content-right"">Vehicle No. ....................................</h6>
+                </div>
+                <div>
+                    <p>_____________________________________________</p>
+                    <p class="sub-title">Please Sign with rubberstamp</p>
+                </div>
+            </div>
+        </div>
+      </div>
+</body>
+</html>

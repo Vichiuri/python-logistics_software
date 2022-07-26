@@ -32,6 +32,12 @@ urlpatterns = [
     path('valuers/create', views.create_valuer, name='valuer-create'),
     path('valuers/<int:pk>', views.update_valuer, name='valuer-update'),
     path('valuers/delete/<int:pk>', views.delete_valuer, name='valuer-delete'),
+    path('note/', views.note, name='note'),
+    path('note/list/', views.note_list, name='note-list'),
+    path('note/download/<int:pk>', views.note_download, name='note-download'),
+    path('note/print/<int:pk>', views.note_print, name='note-print'),
+    path('note/edit/<int:pk>', views.note_edit, name='note-edit'),
+    path('note/view/<int:pk>', views.note_view, name='note_view'),
     
     
 

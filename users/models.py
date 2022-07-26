@@ -6,7 +6,8 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.db import models
-from distributors.models import Document
+
+from distributors.document import Document
 
 
 class UserManager(BaseUserManager):
@@ -72,7 +73,3 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return self.email
-
-
-
-

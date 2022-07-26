@@ -22,7 +22,8 @@ from django.http import HttpResponse, JsonResponse
 
 from .pdfRender import RenderPdf
 
-from .models import Vehicle, Driver, CustomerRelation, Route, Valuer, Document, ConsignmentNote
+from .models import Vehicle, Driver, CustomerRelation, Route, Valuer, ConsignmentNote
+from distributors.document import Document
 
 from users.forms import User
 

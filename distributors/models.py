@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from datetime import datetime
+
 from django.contrib.auth import get_user_model
 # Create your models here.
 User = get_user_model()
@@ -88,7 +89,8 @@ class ConsignmentNote(models.Model):
         'Route', on_delete=models.CASCADE, null=True, blank=True)
     town = models.ForeignKey(
         'Town', on_delete=models.DO_NOTHING, null=True, blank=True)
-    document = models.ForeignKey('Document', on_delete=models.DO_NOTHING)
+    document = models.ForeignKey(
+        'distributors.Document', on_delete=models.DO_NOTHING)
     description = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
     bundle = models.PositiveIntegerField()
@@ -116,10 +118,3 @@ class ConsignmentNote(models.Model):
             self.date_created = self.date_created
         else:
             self.date_created = datetime.date.today()
-
-
-class Document(models.Model):
-    doc_name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.doc_name

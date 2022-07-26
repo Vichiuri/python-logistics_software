@@ -1,8 +1,11 @@
+
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 import shortuuid
 import datetime
 import json
+from multiprocessing import context
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
@@ -637,3 +640,194 @@ def note(request):
         )
 
     return render(request, 'note.html', context)
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def note_list(request):
+    context = {}
+
+    if "action" in request.GET.keys():
+        action = request.GET["action"]
+        if action == "get_customers":
+            q = request.GET["q"]
+            customers = CustomerRelation.objects.filter(
+                Q(customer_name__icontains=q))
+            if customers is not None:
+                return JsonResponse({"customers": [{"id": customer.id, "text": customer.customer_name} for customer in customers]})
+            else:
+                return JsonResponse({"customers": []})
+
+    if "action" in request.GET.keys():
+        action = request.GET["action"]
+        if action == "get_notes":
+            q = request.GET["q"]
+            notes = ConsignmentNote.objects.filter(
+                Q(reference_no__icontains=q))
+            if notes is not None:
+                return JsonResponse({"notes": [{"id": note.id, "text": note.reference_no + ' ' + note.consignee.customer_name} for note in notes]})
+            else:
+                return JsonResponse({"notes": []})
+
+    if "action" in request.GET.keys():
+        action = request.GET['action']
+        if action == 'filter':
+            date = request.GET['date']
+            page = request.GET['page']
+
+            print('Split: ', date.split(' - '))
+            date = date.split(' - ')
+
+            try:
+                    route = request.GET['route']
+            except:
+                    route = ''
+
+            if route == '':
+                    notes_list = ConsignmentNote.objects.filter(
+                        date_created__range=date)
+            else:
+                    notes_list = ConsignmentNote.objects.filter(
+                        date_created__range=date, route__in=route.split(','))
+
+            try:
+                    document = request.GET['document']
+            except:
+                    document = ''
+
+            if document == '':
+                    notes_list = notes_list
+            else:
+                    notes_list = notes_list.filter(
+                        document__in=document.split(','))
+
+            try:
+                    consignee = request.GET['consignee']
+            except:
+                    consignee = ''
+
+            if consignee == '':
+                    notes_list = notes_list
+            else:
+                    print('Currently hreer')
+                    print('Consignee: ', consignee)
+                    notes_list = notes_list.filter(
+                        Q(pk__in=consignee.split(',')))
+
+            try:
+                    consigner = request.GET['consigner']
+            except: 
+                    consigner = ''
+
+            if consigner == '':
+                    notes_list = notes_list
+            else:
+                    customers = CustomerRelation.objects.filter(
+                        id__in=consigner.split(','))
+                    notes_list = notes_list.filter(
+                        Q(consignee__in=customers) | Q(sender_name__in=customers))
+
+            total_value = 0
+
+            for note in notes_list:
+                    total_value += int(float(note.amount))
+
+                # pagination
+            paginator = Paginator(notes_list, 20)
+
+            try:
+                    notes = paginator.page(page)
+            except PageNotAnInteger:
+                    notes = paginator.page(1)
+            except EmptyPage:
+                    notes = paginator.page(paginator.num_pages)
+
+            try:
+                    next_page = notes.next_page_number()
+            except:
+                    next_page = None
+
+            try:
+                    previous_page = notes.previous_page_number()
+            except:
+                    previous_page = None
+
+            if notes:
+                    return JsonResponse(
+                        {
+                            'notes': [{'pk': note.pk, 'tracking_no': note.tracking_no, 'sender_name': note.sender_name.customer_name, 'consigner': note.consignee.customer_name, 'description': note.description, 'bundle': note.bundle, 'quantity': note.quantity, 'rate': note.rate, 'is_delivered': note.is_delivered, 'amount': note.amount, 'tax': note.tax, 'inclusive': note.inclusive, 'date': note.date_created, 'document': note.document.doc_name, 'route': note.route.route_name} for note in notes],
+                            'pagination': {
+                                'has_next': notes.has_next(),
+                                'has_previous': notes.has_previous(),
+                                'next_page': next_page,
+                                'previous_page': previous_page,
+                                'page': notes.number,
+                                'total_pages': notes.paginator.num_pages,
+                            },
+                            'total_value': total_value
+                        }
+                    )
+            else:
+                    return JsonResponse(
+                        {
+                            'notes': [],
+                        }
+                    )
+
+    if "action" in request.GET.keys():
+        action = request.GET['action']
+        if action == 'update_status':
+            pk = request.GET['id']
+            value = request.GET['value']
+
+            print(pk, value)
+            note = get_object_or_404(ConsignmentNote, pk=pk)
+
+            if value == "true":
+                note.is_delivered = True
+            else:
+                note.is_delivered = False
+
+            note.save()
+
+            return JsonResponse(
+                {
+                    'status': True,
+                    'is_delivered': note.is_delivered
+                }
+            )
+
+    if "action" in request.GET.keys():
+        action = request.GET['action']
+        if action == 'get_routes':
+            q = request.GET['q']
+
+            routes = Route.objects.filter(Q(route_name__icontains=q))
+
+            return JsonResponse({
+                'routes': [{'id': route.pk, 'text': route.route_name} for route in routes]
+            })
+
+    if "action" in request.GET.keys():
+        action = request.GET['action']
+        if action == 'get_documents':
+            q = request.GET['q']
+
+            documents = Document.objects.filter(Q(doc_name__icontains=q))
+
+            return JsonResponse({
+                'documents': [{'id': doc.pk, 'text': doc.doc_name} for doc in documents]
+            })
+
+    if request.method == 'POST':
+        if 'action' in request.GET.keys():
+            action = request.GET['action']
+            if action == 'update_status':
+                ...
+
+    return render(request, 'note_list.html', context)
+
+
+
+
+
+

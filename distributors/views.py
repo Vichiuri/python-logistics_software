@@ -1,11 +1,9 @@
-
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import shortuuid
 import datetime
 import json
 from multiprocessing import context
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+import shortuuid
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
@@ -19,6 +17,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views import View
 from .models import Town
 from django.db.models import Q
+from .pdfRender import RenderPdf
 
 from .models import Vehicle, Driver, CustomerRelation, Route, Valuer, Document, ConsignmentNote
 

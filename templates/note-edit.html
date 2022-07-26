@@ -6,17 +6,21 @@
         <div id="error-place">
 
         </div>
+        <a type="button" href="{% url 'note-list' %}" class="btn btn-primary mb-2"><i class="fa fa-arrow-left"></i> Back</a>
       <div class="card">
         <div class="card-header">
-          <h6 class="card-title">Consignment Note</h6>
+          <h6 class="card-title">Consignment Note Edit</h6>
         </div>
         <div class="card-content">
           <div class="card-body">
             <div class="row" id="old">
               <div class="col-12">
                 <div class="d-flex justify-content-between my-2">
-                    <p>Consignment Note No: {{reference_no}}</p>
-                    <p id="new_date" ></p>
+                    <p>Consignment Note No: {{note.reference_no}}</p>
+                    <div class="form-group">
+                        <label for="date">Edit Date: </label>
+                        <input type="date" class="form-control" id="date" name="date">
+                    </div>
                 </div>
                 <form action="{{ request.path }}" method="post">
                   {{ form.errors }}
@@ -119,7 +123,7 @@
                 <div class="col-12">
                   <div class="d-flex justify-content-between my-2">
                       <p>Consignment Note No: {{reference_no}}</p>
-                      <p id="new_date_new" ></p>
+                      <p id="date" ></p>
                   </div>
                   <form action="{{ request.path }}" method="post">
                     {{ form.errors }}
@@ -299,7 +303,7 @@
   <div id="form-transport">
     <div class="card mt-2">
         <div class="card-body">
-            <p class="my-4">Tracking No: {{tracking_no}}</p>
+            <p class="my-4" >Tracking No: {{note.tracking_no}}</p>
 
             <div class="row">
                 <div class="col-lg-2 col-md-4 col-sm-6 mb-1">
@@ -391,7 +395,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 mb-1">
                     <label for="id_per">Valuer</label>
                     <select class="form-control" name="id_valuer" id="id_valuer">
-                        <option value="">-- Select Valuer -- </option>
+                        <!-- <option value="">-- Select Valuer -- </option> -->
                     </select>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6 mb-1">
@@ -419,11 +423,22 @@
     var tax = 0
     var inclusive = 0
     var exclusive = 0
+    var clicked_add = false
 
     var protocol = window.location.protocol;
     var host = window.location.host;
     var url_print = protocol + "//" + host + "/note/print/";
-    var clicked_add = false
+      
+    function date_converter(date_instance){
+        var add_date = new Date(date_instance);
+        var new_date = new Date(add_date.getTime() + + 86400000)
+        var today = new_date.toLocaleDateString();
+        var today = new_date.toISOString().substring(0, 10);
+        $('#date').val(today);
+    }
+
+    var date_instance = "{{note.date_created}}" 
+    date_converter(date_instance)
 
 
     var formData = new FormData();
@@ -692,6 +707,7 @@
                 'X-CSRFToken': getCookie('csrftoken')
             },
             success: function(data){
+                console.log("True: ", data)
                 if (data.success) {
                     $('#alert-success').html('<strong>Success !</strong> Town saved successfully.')
                     $('#alert-success').show()
@@ -739,7 +755,11 @@
                 let options = '';
                 if(data.documents.length > 0){
                     $.each(data.documents, function(index, value){
-                        options += '<option value="'+value.id+'">'+value.name+'</option>';
+                        if(value.id == "{{note.document.id}}"){
+                            options += '<option value="'+value.id+'" selected>'+value.text+'</option>';
+                        }else{
+                          options += '<option value="'+value.id+'">'+value.name+'</option>';
+                        }
                     });
                 }
                 $('#id_document').html(options);
@@ -775,26 +795,10 @@
             let options = '';
             if(data.documents.length > 0){
                 $.each(data.documents, function(index, value){
-                    options += '<option value="'+value.id+'">'+value.name+'</option>';
+                    options += '<option value="'+value.id+'">'+value.text+'</option>';
                 });
             }
             $('#id_document_id').html(options);
-        }
-    })
-
-    jQuery.ajax({
-        url: '?action=get_valuers',
-        type:'GET',
-        dataType: 'json',
-        success: function(data){
-            let options = '';
-            options += '<option value="">-- Select Valuer -- </option>';
-            if(data.valuers.length > 0){
-                $.each(data.valuers, function(index, value){
-                    options += '<option value="'+value.id+'">'+value.name+'</option>';
-                });
-            }
-            $('#id_valuer').html(options);
         }
     })
 
@@ -830,6 +834,38 @@
           );
       });
 
+      $(document).ready(function() {
+          $('#id_valuer').select2(
+            {
+              placeholder: 'Select or valuer: ',
+              class: 'form-control',
+              minimumInputLength: 3,
+              width: '100%',
+              ajax: {
+                url: '?action=get_valuers',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    q: params.term, // search term
+                    page: params.page
+                  };
+                },
+                processResults: function (data, params) {
+                  params.page = params.page || 1;
+                  return {
+                    results: data.valuers,
+                    pagination: {
+                      more: (params.page * 30) < data.total_count
+                    }
+                  };
+                },
+                cache: true
+              },
+            }
+          );
+      });
+
       $('#id_sender_id').on('change', () => {
         $('#id_consigner_id').prop('disabled', false);
       });
@@ -850,7 +886,7 @@
                   return {
                     q: params.term, // search term
                     page: params.page,
-                    sender_id: $('#id_sender_id').val()
+                    sender_id: $('#id_sender_id').find(':selected').val()
                   };
                 },
                 processResults: function (data, params) {
@@ -932,10 +968,6 @@
           );
       });
 
-    $('#id_sender_id').on('change', function() {
-      console.log('sender_id changed: ', $(this).val());
-    })
-
     // Button Input
     $('#transportation').on('click', function(){
         $('#form-transport').show();
@@ -981,24 +1013,11 @@
         let quantity = $('#id_quantity').val();
         let bundle = $('#id_bundle').val();
 
-        let tax = $('#id_tax').val();
-        if(tax == "" || tax == 2){
-          if(per == 1){
-              amount = quantity * rate;
-          }else{
-              amount = bundle * rate;
-          }
+        if(per == 1){
+            amount = quantity * rate;
         }else{
-          if(per == 1){
-              amount = quantity * rate;
-              amount = Math.round(amount * 1.16);
-          }else{
-              amount = bundle * rate;
-              amount = Math.round(amount * 1.16);
-          }
-
+            amount = bundle * rate;
         }
-        console.log('Per amount: ', amount);
         $('#amount').val(amount);
     })
 
@@ -1009,15 +1028,10 @@
         let bundle = $('#id_bundle').val();
         let per = $('#id_per').val();
         let amount = $('#amount').val(); 
-        let inclusive = 0;
-        let exclusive = 0;
-        let tax_amount = 0;
-
-        let per_temp = $('#id_per').val()
-
-        console.log('Add : ' + amount)
+        let per_temp = ''
 
         if(name == '' || quantity == '' || rate == ''){
+            $('#error-success').hide();
             $('#error').html('<strong>Error!</strong> Please add description, quantity rate, and VAT.');
             $('#error').show();
             return false;
@@ -1027,35 +1041,20 @@
 
         let tax = $('#id_tax').val();
 
-        if(tax == "" ){
-          $('#alert').html('<strong>Error!</strong> Please selet Tax Type.');
-          $('#alert').show();
-          var scrollToTop = window.setInterval(function() {
-                var pos = window.pageYOffset;
-                if ( pos > 0 ) {
-                    window.scrollTo( 0, pos - 80 ); // how far to scroll on each step
-                } else {
-                    window.clearInterval( scrollToTop );
-                }
-            }, 30)
-          return false;
+        if(per == 1){
+            amount = quantity * rate;
+            exclusive = amount
+            per_temp = 'Kgs'
+        }else{
+            amount = quantity * bundle
+            exclusive = amount
+            per_temp = 'bundle'
         }
 
         if(tax == 1){
-          let new_amount = (amount * 100) / 116;
-          exclusive = Math.round(new_amount)
-          inclusive = amount
-          tax_amount = inclusive - exclusive
-        }else{
-            exclusive = amount
+            amount = Math.round(amount * 1.16);
             inclusive = amount
-            tax_amount = 0
-        }
-
-        if(per == 1){
-          per_temp = 'Kgs'
-        }else{
-          per_temp = 'Bundle'
+            tax = inclusive - exclusive
         }
 
         let html = '<tr>';
@@ -1073,7 +1072,7 @@
         formData.append('bundle', bundle);
         formData.append('per', per);
         formData.append('amount', amount);
-        formData.append('tax', tax_amount);
+        formData.append('tax', tax);
         formData.append('inclusive', inclusive);
         formData.append('exclusive', exclusive);
 
@@ -1089,15 +1088,18 @@
 
     $('#id_tax').on('change', function(){
         let tax = $(this).val();
+        console.log('changing: ', tax)
         if(tax == 1){
             $('#amount').val(Math.round($('#amount').val() * 1.16));
         }else{
             var amount;
             if($('#id_per').val() == 1){
                 amount = $('#id_quantity').val() * $('#id_rate').val();
+                // per_temp = 'Kgs'
                 inclusive = amount
             }else{
-                amount = $('#id_bundle').val() * $('#id_rate').val();
+                amount = $('#id_quantity').val() * $('#id_bundle').val();
+                // per_temp = 'bundle'
                 inclusive = amount
             }
             $('#amount').val(amount);
@@ -1121,8 +1123,6 @@
     }
 
     $('#save_note').on('click', function(){
-        
-
         if(new_activated){
             formData.append('sender_name', $('#id_sender').val());
             formData.append('consignee', $('#id_consigner').val());
@@ -1142,31 +1142,20 @@
             formData.append('id_delivered', $('#id_delivered').val());
             formData.append('valuer', $('#id_valuer').val());
             formData.append('input', 1);
-
-            if($('#id_sender_id').val() == '' || $('#id_consigner_id').val() == '' || $('#id_route_id').val() == '' || $('#id_town_id').val() == ''){
-                $('#alert').html('<strong>Error!</strong> Please add all details.');
-                $('#alert').show();
-                
-                var scrollToTop = window.setInterval(function() {
-                  var pos = window.pageYOffset;
-                    if ( pos > 0 ) {
-                        window.scrollTo( 0, pos - 80 ); // how far to scroll on each step
-                    } else {
-                        window.clearInterval( scrollToTop );
-                    }
-                }, 30)
-
-                return false;
-
-            }
         }
 
         formData.append('tracking_no', "{{ tracking_no }}");
         formData.append('reference_no', "{{ reference_no }}");
+        formData.append("date", $('#date').val())
 
-        let name = $('#id_description').val();
-        let quantity = $('#id_quantity').val();
-        let rate = $('#id_rate').val();
+        // check if naration is empty
+        if($('#id_valuer').val() == ''){
+            $('#alert').html('<strong>Error!</strong> Please add a valuer.');
+            $('#alert').show();
+            // scroll to top
+            window.scrollTop({ top: 0, behavior: 'smooth' });
+            return false;
+        }
 
         if(clicked_add == false){
             $('#alert').html('<strong>Error!</strong> Please add an item to consignment list.');
@@ -1184,13 +1173,6 @@
 
         clicked_add = false;
 
-        // check if naration is empty
-        if($('#id_valuer').val() == ''){
-            $('#alert').html('<strong>Error!</strong> Please add a valuer.');
-            $('#alert').show();
-            return false;
-        }
-
         $('#alert').hide();
 
         jQuery.ajax({
@@ -1205,7 +1187,7 @@
             success: function(data){
                 if(data.status == 'success'){
                     // window.location.href = "{% url 'note-list' %}";
-                    $('#alert-success').html('<strong>Success!</strong> Consignment Note saved.');
+                    $('#alert-success').html('<strong>Success!</strong> Consignment Updated.');
                     $('#alert-success').show();
                     
                     url_print += data.id;
@@ -1215,6 +1197,7 @@
                     $('#print-back').show()
                     $('#new').attr('href', "{% url 'note' %}");
                     $('#new').show()
+                    $('#alert').hide();
                     $('#save_note').prop('disabled', true);
                 }else{
                     $('#alert').html('<strong>Error !</strong> Failed to save not saved.')
@@ -1223,6 +1206,58 @@
             }
         })
     })
+
+    // set initial values for note
+    $('#id_consigner_id').append($('<option>', {
+        value: "{{note.consignee.id }}",
+        text: "{{note.consignee.customer_name }}"
+    }))
+    $('#id_consigner_id').val("{{note.consignee.id}}");
+
+    $('#id_sender_id').append($('<option>', {
+        value: "{{note.sender_name.id }}",
+        text: "{{note.sender_name.customer_name }}"
+    }))
+
+    $('#id_sender_id').val("{{note.sender_name.id }}");
+
+    $('#id_document_id').append($('<option>', {
+        value: "{{note.document.id }}",
+        text: "{{note.document.doc_name }}"
+    }))
+    $('#id_document_id').val("{{note.document.id }}");
+
+    $('#id_route_id').append($('<option>', {
+        value: "{{note.route.id }}",
+        text: "{{note.route.route_name }}"
+    }))
+
+    $('#id_route_id').val("{{note.route.id }}");
+
+    $('#id_town_id').append($('<option>', {
+        value: "{{note.town.id}}",
+        text: "{{note.town.name}}"
+    }))
+    $('#id_town_id').val("{{note.town.id}}");
+
+    $('#id_valuer').append($('<option>', {
+        value: "{{note.valuer.id}}",
+        text: "{{note.valuer.name}}"
+    }))
+    $('#id_valuer').val("{{note.valuer.id}}");
+
+    $('#id_description').val("{{note.description}}");
+    $('#id_quantity').val("{{note.quantity}}");
+    $('#id_rate').val("{{note.rate}}");
+    $('#id_bundle').val("{{note.bundle}}");
+    $('#amount').val("{{note.inclusive}}");
+
+
+    if("{{note.tax}}" > 0){
+        $('#id_tax').val(1);
+    }else{
+        $('#id_tax').val(2);
+    }
 
 </script>
 {% endblock js %}

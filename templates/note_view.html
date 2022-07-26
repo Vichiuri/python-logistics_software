@@ -1,0 +1,94 @@
+{% extends 'tally/base.html' %}
+
+{% block content %}
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'note-list' %}" type="button" class="btn btn-primary ml-2 mb-2">
+            <i class="fa fa-arrow-left mr-2"></i>
+            Back
+        </a>
+        <a target="_blank" href="{% url 'note-print' notes.pk %}" type="button" class="btn btn-secondary mb-2 mr-2">
+            <i class="fa fa-print mr-2"></i>
+            Print
+        </a>
+    </div>
+    <div class="row min-vh-75">
+    <div class="card w-100 mx-4 p-4 ">
+        <div class="card-title">
+            <h4>Inventory Voucher</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <p>Consignment Note No: {{notes.reference_no}}</p>
+                <p>{{notes.date_created}}</p>
+            </div>
+            <div class="d-flex justify-content-left">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <p>Sender Name</p>
+                        <p>Consignee</p>
+                        <p>Route</p>
+                        <p>Type</p>
+                    </div>
+                    <div class="ml-4">
+                        <p>{{notes.sender_name}}</p>
+                        <p>{{notes.consignee}}</p>
+                        <p>{{notes.route}}</p>
+                        <p>{{notes.document}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive my-4">
+                <table
+                class="table table-hover border table-stripped table-vcenter table-striped"
+                cellspacing="0"
+                >
+                    <thead class="table bg-primary text-white">
+                        <tr>
+                            <td>Name of Item</td>
+                            <td>Quantity</td>
+                            <td>Rate</td>
+                            <td>Per</td>
+                            <td>Amount</td>
+                            <td>Tax</td>
+                            <td>Inclusive</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="d-flex flex-column">
+                                    <p>Transportation</p>
+                                    <p class="text-muted">{{notes.description}}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <p>{{notes.quantity}} Kgs</p>
+                                    <p class="text-muted" >({{notes.bundle}} bundle)</p>
+                                </div>
+                            </td>
+                            <td>{{notes.rate}}</td>
+                            <td>{{notes.per}}</td>
+                            <td>{{notes.amount}}</td>
+                            <td>{{notes.tax}}</td>
+                            <td>{{notes.inclusive}}</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>{{notes.quantity}} {% if notes.per == '1' %} Kgs {% else %} Bundle {% endif %}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{notes.inclusive}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+            <div class="d-flex flex-column my-4">
+                <p>Valuer: {{notes.valuer}}</p>
+                <p>Narations is delivered: {% if notes.is_delivered %} Yes {% else %} No {% endif %} </p>
+            </div>
+            
+        </div>
+    </div>
+  </div>
+
+{% endblock content %}

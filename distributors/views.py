@@ -678,100 +678,100 @@ def note_list(request):
             date = date.split(' - ')
 
             try:
-                    route = request.GET['route']
+                route = request.GET['route']
             except:
-                    route = ''
+                route = ''
 
             if route == '':
-                    notes_list = ConsignmentNote.objects.filter(
-                        date_created__range=date)
+                notes_list = ConsignmentNote.objects.filter(
+                    date_created__range=date)
             else:
-                    notes_list = ConsignmentNote.objects.filter(
-                        date_created__range=date, route__in=route.split(','))
+                notes_list = ConsignmentNote.objects.filter(
+                    date_created__range=date, route__in=route.split(','))
 
             try:
-                    document = request.GET['document']
+                document = request.GET['document']
             except:
-                    document = ''
+                document = ''
 
             if document == '':
-                    notes_list = notes_list
+                notes_list = notes_list
             else:
-                    notes_list = notes_list.filter(
-                        document__in=document.split(','))
+                notes_list = notes_list.filter(
+                    document__in=document.split(','))
 
             try:
-                    consignee = request.GET['consignee']
+                consignee = request.GET['consignee']
             except:
-                    consignee = ''
+                consignee = ''
 
             if consignee == '':
-                    notes_list = notes_list
+                notes_list = notes_list
             else:
-                    print('Currently hreer')
-                    print('Consignee: ', consignee)
-                    notes_list = notes_list.filter(
-                        Q(pk__in=consignee.split(',')))
+                print('Currently hreer')
+                print('Consignee: ', consignee)
+                notes_list = notes_list.filter(
+                    Q(pk__in=consignee.split(',')))
 
             try:
-                    consigner = request.GET['consigner']
-            except: 
-                    consigner = ''
+                consigner = request.GET['consigner']
+            except:
+                consigner = ''
 
             if consigner == '':
-                    notes_list = notes_list
+                notes_list = notes_list
             else:
-                    customers = CustomerRelation.objects.filter(
-                        id__in=consigner.split(','))
-                    notes_list = notes_list.filter(
-                        Q(consignee__in=customers) | Q(sender_name__in=customers))
+                customers = CustomerRelation.objects.filter(
+                    id__in=consigner.split(','))
+                notes_list = notes_list.filter(
+                    Q(consignee__in=customers) | Q(sender_name__in=customers))
 
             total_value = 0
 
             for note in notes_list:
-                    total_value += int(float(note.amount))
+                total_value += int(float(note.amount))
 
                 # pagination
             paginator = Paginator(notes_list, 20)
 
             try:
-                    notes = paginator.page(page)
+                notes = paginator.page(page)
             except PageNotAnInteger:
-                    notes = paginator.page(1)
+                notes = paginator.page(1)
             except EmptyPage:
-                    notes = paginator.page(paginator.num_pages)
+                notes = paginator.page(paginator.num_pages)
 
             try:
-                    next_page = notes.next_page_number()
+                next_page = notes.next_page_number()
             except:
-                    next_page = None
+                next_page = None
 
             try:
-                    previous_page = notes.previous_page_number()
+                previous_page = notes.previous_page_number()
             except:
-                    previous_page = None
+                previous_page = None
 
             if notes:
-                    return JsonResponse(
-                        {
-                            'notes': [{'pk': note.pk, 'tracking_no': note.tracking_no, 'sender_name': note.sender_name.customer_name, 'consigner': note.consignee.customer_name, 'description': note.description, 'bundle': note.bundle, 'quantity': note.quantity, 'rate': note.rate, 'is_delivered': note.is_delivered, 'amount': note.amount, 'tax': note.tax, 'inclusive': note.inclusive, 'date': note.date_created, 'document': note.document.doc_name, 'route': note.route.route_name} for note in notes],
-                            'pagination': {
-                                'has_next': notes.has_next(),
-                                'has_previous': notes.has_previous(),
-                                'next_page': next_page,
-                                'previous_page': previous_page,
-                                'page': notes.number,
-                                'total_pages': notes.paginator.num_pages,
-                            },
-                            'total_value': total_value
-                        }
-                    )
+                return JsonResponse(
+                    {
+                        'notes': [{'pk': note.pk, 'tracking_no': note.tracking_no, 'sender_name': note.sender_name.customer_name, 'consigner': note.consignee.customer_name, 'description': note.description, 'bundle': note.bundle, 'quantity': note.quantity, 'rate': note.rate, 'is_delivered': note.is_delivered, 'amount': note.amount, 'tax': note.tax, 'inclusive': note.inclusive, 'date': note.date_created, 'document': note.document.doc_name, 'route': note.route.route_name} for note in notes],
+                        'pagination': {
+                            'has_next': notes.has_next(),
+                            'has_previous': notes.has_previous(),
+                            'next_page': next_page,
+                            'previous_page': previous_page,
+                            'page': notes.number,
+                            'total_pages': notes.paginator.num_pages,
+                        },
+                        'total_value': total_value
+                    }
+                )
             else:
-                    return JsonResponse(
-                        {
-                            'notes': [],
-                        }
-                    )
+                return JsonResponse(
+                    {
+                        'notes': [],
+                    }
+                )
 
     if "action" in request.GET.keys():
         action = request.GET['action']
@@ -827,7 +827,269 @@ def note_list(request):
     return render(request, 'note_list.html', context)
 
 
+@login_required(login_url=settings.LOGIN_URL)
+def note_view(request, pk):
+    context = {}
+    context['notes'] = ConsignmentNote.objects.get(pk=pk)
+    return render(request, 'note_view.html', context)
 
 
+@login_required(login_url=settings.LOGIN_URL)
+def note_download(request, pk):
+    context = {}
+    context['notes'] = ConsignmentNote.objects.get(pk=pk)
+
+    pdf = RenderPdf.create_pdf('note-download.html', context)
+
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = f'consignment_note_{pk}.pdf'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    return render(request, 'note_view.html', context)
 
 
+@login_required(login_url=settings.LOGIN_URL)
+def note_print(request, pk):
+    context = {}
+    context['notes'] = ConsignmentNote.objects.get(pk=pk)
+
+    pdf = RenderPdf.create_pdf('note-download.html', context)
+
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        filename = f'consignment_note_{pk}.pdf'
+        response['Content-Disposition'] = f'filename="{filename}"'
+        return response
+    return render(request, 'note_view.html', context)
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def note_edit(request, pk):
+    context = {}
+    context['note'] = ConsignmentNote.objects.get(pk=pk)
+
+    if "action" in request.GET.keys():
+        action = request.GET['action']
+        if action == 'get_documents':
+            documents = Document.objects.all()
+
+            return JsonResponse({
+                'documents': [{'id': doc.pk, 'text': doc.doc_name} for doc in documents]
+            })
+
+    if "action" in request.GET.keys():
+        action = request.GET['action']
+        if action == 'get_valuers':
+            q = request.GET['q']
+
+            valuers = UserManager.objects.filter(
+                Q(is_valuer=True) & Q(name__icontains=q))
+
+            return JsonResponse({
+                'valuers': [{'id': valuer.pk, 'text': valuer.name} for valuer in valuers]
+            })
+
+    if request.method == 'POST':
+        # SAVE ROUTES
+        if "action" in request.GET.keys():
+            action = request.GET['action']
+            if action == 'save_routes':
+                # get data from form data
+                route_name = request.POST['route_name']
+                print(route_name)
+                try:
+                    route = Route.objects.create(
+                        route_name=route_name,
+                    )
+                    route.save()
+                    return JsonResponse({
+                        'success': True,
+                        'route': {'text': route.route_name, 'id': route.id}
+                    }, safe=False)
+                except KeyError:
+                    return JsonResponse({
+                        'success': False,
+                        'route': {}
+                    }, safe=False)
+
+        if "action" in request.GET.keys():
+            action = request.GET['action']
+            if action == 'save_towns':
+                # get data from form data
+                town_name = request.POST['town_name']
+                try:
+                    town = Town.objects.create(
+                        name=town_name,
+                    )
+                    town.save()
+                    return JsonResponse({
+                        'success': True,
+                        'town': {'text': town.name, 'id': town.id}
+                    }, safe=False)
+                except KeyError:
+                    return JsonResponse({
+                        'success': False,
+                        'town': {}
+                    }, safe=False)
+
+        if "action" in request.GET.keys():
+            action = request.GET['action']
+            if action == 'save_consignee':
+                # get data from form data
+                consignee_name = request.POST['consignee_name']
+                consignee_address = request.POST['consignee_address']
+                consignee_pin = request.POST['consignee_pin']
+                consignee_account = request.POST['consignee_account']
+
+                if consignee_address == '':
+                    consignee_address = None
+
+                if consignee_pin == '':
+                    consignee_pin = None
+
+                if consignee_account == '':
+                    consignee_account = None
+
+                try:
+                    customer = CustomerRelation.objects.create(
+                        customer_name=consignee_name,
+                        customer_address=consignee_address,
+                        Customer_pin=consignee_pin,
+                        account=consignee_account,
+                    )
+                    customer.save()
+
+                    return JsonResponse({
+                        'success': True,
+                        'consignee': {'text': customer.customer_name, 'id': customer.id}
+                    }, safe=False)
+                except KeyError:
+                    return JsonResponse({
+                        'success': False,
+                        'consignee': {}
+                    }, safe=False)
+
+        if "action" in request.GET.keys():
+            action = request.GET['action']
+            if action == 'save_sender':
+                # get data from form data
+                consignee_name = request.POST['sender_name']
+                consignee_address = request.POST['sender_address']
+                consignee_pin = request.POST['sender_pin']
+                consignee_account = request.POST['sender_account']
+
+                if consignee_address == '':
+                    consignee_address = None
+
+                if consignee_pin == '':
+                    consignee_pin = None
+
+                if consignee_account == '':
+                    consignee_account = None
+
+                try:
+                    customer = CustomerRelation.objects.create(
+                        customer_name=consignee_name,
+                        customer_address=consignee_address,
+                        Customer_pin=consignee_pin,
+                        account=consignee_account,
+                    )
+                    customer.save()
+
+                    return JsonResponse({
+                        'success': True,
+                        'sender': {'text': customer.customer_name, 'id': customer.id}
+                    }, safe=False)
+                except KeyError:
+                    return JsonResponse({
+                        'success': False,
+                        'sender': {}
+                    }, safe=False)
+
+        id_delivered = False
+        new_date = request.POST['date']
+        # convert date to db format
+        new_date = datetime.datetime.strptime(new_date, '%Y-%m-%d').date()
+        new_date = new_date.strftime('%Y-%m-%d')
+
+        if request.POST['id_delivered'] == 'true':
+            id_delivered = True
+
+        if request.POST['input'] == '0':
+
+            customer_sender = CustomerRelation(
+                customer_name=request.POST['sender_name'],
+            )
+
+            customer_sender.save()
+
+            customer_consignee = CustomerRelation(
+                customer_name=request.POST['sender_name'],
+                created=True
+            )
+
+            customer_consignee.save()
+
+            route.save()
+
+            town = Town(
+                name=request.POST['town'],
+                created=True
+            )
+
+            town.save()
+
+            note = ConsignmentNote.objects.get(pk=pk)
+            note.sender_name = customer_sender
+            note.consignee = customer_consignee
+            note.description = request.POST['description']
+            note.quantity = request.POST['quantity']
+            note.per = request.POST['per']
+            note.town = town
+            note.amount = request.POST['exclusive']
+            note.tax = request.POST['tax']
+            note.inclusive = request.POST['inclusive']
+            note.bundle = request.POST['bundle']
+            note.rate = request.POST['rate']
+            note.reference_no = request.POST['reference_no']
+            note.is_delivered = id_delivered
+            note.route = Route.objects.get(pk=request.POST['route'])
+            note.date_created = datetime.datetime.now().date()
+            note.document = Document.objects.get(pk=request.POST['document'])
+            note.valuer = UserManager.objects.get(pk=request.POST['valuer'])
+            note.date_created = new_date
+            note.save()
+
+        else:
+            note = ConsignmentNote.objects.get(pk=pk)
+            note.sender_name = CustomerRelation.objects.get(
+                id=request.POST['sender_name'])
+            note.consignee = CustomerRelation.objects.get(
+                id=request.POST['consignee'])
+            note.description = request.POST['description']
+            note.quantity = request.POST['quantity']
+            note.town = Town.objects.get(id=request.POST['town'])
+            note.per = request.POST['per']
+            note.amount = request.POST['exclusive']
+            note.tax = request.POST['tax']
+            note.inclusive = request.POST['inclusive']
+            note.bundle = request.POST['bundle']
+            note.rate = request.POST['rate']
+            note.reference_no = request.POST['reference_no']
+            note.is_delivered = id_delivered
+            note.date_created = datetime.datetime.now().date()
+            note.route = Route.objects.get(pk=request.POST['route'])
+            note.document = Document.objects.get(pk=request.POST['document'])
+            note.valuer = UserManager.objects.get(pk=request.POST['valuer'])
+            note.date_created = new_date
+            note.save()
+
+        return JsonResponse(
+            {
+                'status': 'success',
+                'id': note.id
+            }
+        )
+
+    return render(request, 'note-edit.html', context)

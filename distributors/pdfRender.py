@@ -12,7 +12,7 @@ class RenderPdf:
     def create_pdf(template, context):
         try:
             html_string = render_to_string(template, context)
-            css = os.path.join(settings.BASE_DIR, 'tally/static/css/pdf.css')
+            css = os.path.join(settings.BASE_DIR, 'static/css/pdf.css')
             html = HTML(string=html_string)
             doc = html.render(stylesheets=[css])
             pdf = doc.write_pdf()

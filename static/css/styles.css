@@ -1,0 +1,5 @@
+.col-form-label.required:after {
+    color: #dc3545;
+    content: "*";
+    display: inline-block;
+}

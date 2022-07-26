@@ -1,0 +1,30 @@
+@media print {
+    body{
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+
+    .header, .breadcrumps, footer, aside, nav, form, iframe, .menu, .hero, .adslot, .pagination, #filtration, #changes, #print {
+        display: none;
+    }
+
+    div .filters{
+        display: none;
+    }
+
+    .table-responsive{
+        width: 100%;
+        overflow-x: hidden;
+        table-layout: fixed;
+        height: 100%;
+        overflow-y: auto;
+        page-break-before: always;
+        font-size: 8px;
+    }
+
+}
+
+@page {
+    size: A4;
+}

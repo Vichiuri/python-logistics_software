@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+import shortuuid
+import datetime
+import json
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse_lazy
@@ -12,8 +15,9 @@ from django.db.transaction import atomic
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views import View
 from .models import Town
+from django.db.models import Q
 
-from .models import Vehicle, Driver, CustomerRelation, Route, Valuer, Document, CustomerRelation
+from .models import Vehicle, Driver, CustomerRelation, Route, Valuer, Document, ConsignmentNote
 
 from users.forms import User
 

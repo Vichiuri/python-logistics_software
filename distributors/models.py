@@ -63,7 +63,6 @@ class CustomerRelation(models.Model):
     contact_person_name = models.CharField(
         max_length=100, null=True, blank=True)
     account = models.CharField(max_length=100, null=True, blank=True)
-    created = models.BooleanField(default=False)
 
     def __str__(self):
         return self.customer_name

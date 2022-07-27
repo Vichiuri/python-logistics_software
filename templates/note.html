@@ -391,7 +391,6 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 mb-1">
                     <label for="id_per">Valuer</label>
                     <select class="form-control" name="id_valuer" id="id_valuer">
-                        <option value="">-- Select Valuer -- </option>
                     </select>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6 mb-1">
@@ -516,6 +515,35 @@
         $('#old').show()
         $('#alert').hide()
         $('#alert-success').hide()
+    });
+
+    $(document).ready(function(){
+        $('#id_valuer').select2({
+            ajax: {
+                url: "?action=get_valuers",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.valuers,
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1,
+            placeholder: 'Select Valuer',
+        });
     });
 
     // saving data to db
@@ -782,21 +810,21 @@
         }
     })
 
-    jQuery.ajax({
-        url: '?action=get_valuers',
-        type:'GET',
-        dataType: 'json',
-        success: function(data){
-            let options = '';
-            options += '<option value="">-- Select Valuer -- </option>';
-            if(data.valuers.length > 0){
-                $.each(data.valuers, function(index, value){
-                    options += '<option value="'+value.id+'">'+value.name+'</option>';
-                });
-            }
-            $('#id_valuer').html(options);
-        }
-    })
+    // jQuery.ajax({
+    //     url: '?action=get_valuers',
+    //     type:'GET',
+    //     dataType: 'json',
+    //     success: function(data){
+    //         let options = '';
+    //         options += '<option value="">-- Select Valuer -- </option>';
+    //         if(data.valuers.length > 0){
+    //             $.each(data.valuers, function(index, value){
+    //                 options += '<option value="'+value.id+'">'+value.name+'</option>';
+    //             });
+    //         }
+    //         $('#id_valuer').html(options);
+    //     }
+    // })
 
     $(document).ready(function() {
           $('#id_sender_id').select2(
@@ -1204,16 +1232,16 @@
             },
             success: function(data){
                 if(data.status == 'success'){
-                    // window.location.href = "{% url 'note-list' %}";
+                    // window.location.href = "{% url 'main:note-list' %}";
                     $('#alert-success').html('<strong>Success!</strong> Consignment Note saved.');
                     $('#alert-success').show();
                     
                     url_print += data.id;
                     $('#print').attr('href', url_print);
-                    $('#print-back').attr('href', "{% url 'note-list' %}");
+                    $('#print-back').attr('href', "{% url 'main:note-list' %}");
                     $('#print').show()
                     $('#print-back').show()
-                    $('#new').attr('href', "{% url 'note' %}");
+                    $('#new').attr('href', "{% url 'main:note' %}");
                     $('#new').show()
                     $('#save_note').prop('disabled', true);
                 }else{

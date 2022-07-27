@@ -1232,16 +1232,16 @@
             },
             success: function(data){
                 if(data.status == 'success'){
-                    // window.location.href = "{% url 'main:note-list' %}";
+                    // window.location.href = "{% url 'note-list' %}";
                     $('#alert-success').html('<strong>Success!</strong> Consignment Note saved.');
                     $('#alert-success').show();
                     
                     url_print += data.id;
                     $('#print').attr('href', url_print);
-                    $('#print-back').attr('href', "{% url 'main:note-list' %}");
+                    $('#print-back').attr('href', "{% url 'note-list' %}");
                     $('#print').show()
                     $('#print-back').show()
-                    $('#new').attr('href', "{% url 'main:note' %}");
+                    $('#new').attr('href', "{% url 'note' %}");
                     $('#new').show()
                     $('#save_note').prop('disabled', true);
                 }else{

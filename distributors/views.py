@@ -1,5 +1,6 @@
 import datetime
 import json
+from django.http import JsonResponse
 from multiprocessing import context
 from venv import create
 from django.shortcuts import render
@@ -188,6 +189,56 @@ def town_edit(request, pk):
         return render(request, 'town-edit.html', context)
 
 
+# def create_customer(request):
+#     if request.method == 'POST':
+#         form = CustomerRelationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('customers')
+#     else:
+#         form = CustomerRelationForm()
+#     context = {"form": form}
+#     return render(request, 'create_customer.html', context)
+
+
+# def list_customers(request):
+#     customers = CustomerRelation.objects.all()
+
+#     # Pagination
+#     paginator = Paginator(customers, 20)
+#     page = request.GET.get('page')
+
+#     print('page: ', page)
+
+#     try:
+#         customers = paginator.page(page)
+#     except PageNotAnInteger:
+#         customers = paginator.page(1)
+#     except EmptyPage:
+#         customers = paginator.page(paginator.num_pages)
+
+#     context = {"customers": customers}
+#     return render(request, 'customers_list.html', context)
+
+
+# def update_customer(request, pk):
+#     customer = get_object_or_404(CustomerRelation, pk=pk)
+#     if request.method == 'POST':
+#         form = CustomerRelationForm(request.POST, instance=customer)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('customers')
+#     else:
+#         form = CustomerRelationForm(instance=customer)
+#     context = {'form': form}
+#     return render(request, 'create_customer.html', context)
+
+
+# def delete_customer(request, pk):
+#     customer = get_object_or_404(CustomerRelation, pk=pk)
+#     customer.delete()
+#     return redirect('customers')
+
 def create_customer(request):
     if request.method == 'POST':
         form = CustomerRelationForm(request.POST)
@@ -201,13 +252,20 @@ def create_customer(request):
 
 
 def list_customers(request):
-    customers = CustomerRelation.objects.all()
+    try:
+        filter = request.GET.get('filter')
+        customers = CustomerRelation.objects.filter(id=filter)
+    except:
+        customers = CustomerRelation.objects.all()
+
+    if filter != None:
+        customers = CustomerRelation.objects.filter(id=filter)
+    else:
+        customers = CustomerRelation.objects.all()
 
     # Pagination
     paginator = Paginator(customers, 20)
     page = request.GET.get('page')
-
-    print('page: ', page)
 
     try:
         customers = paginator.page(page)
@@ -217,6 +275,17 @@ def list_customers(request):
         customers = paginator.page(paginator.num_pages)
 
     context = {"customers": customers}
+
+    if "action" in request.GET.keys():
+        action = request.GET["action"]
+        if action == "get_customers":
+            q = request.GET["q"]
+
+            customers = CustomerRelation.objects.filter(Q(customer_name__icontains=q) | Q(
+                account__icontains=q) | Q(customer_address__icontains=q) | Q(town__name__icontains=q))
+
+            return JsonResponse({"customers": [{"id": customer.id, "text": customer.customer_name} for customer in customers]})
+
     return render(request, 'customers_list.html', context)
 
 
